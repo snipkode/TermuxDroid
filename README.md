@@ -80,6 +80,13 @@ npm run install-deps
 ./scripts/install-deps.sh --all -y
 ```
 
+**Install specific Android SDK version:**
+```bash
+./scripts/install-deps.sh --sdk --sdk-version=31
+# or
+./scripts/install-deps.sh --sdk --sdk-version=34
+```
+
 **Setup environment variables:**
 ```bash
 npm run setup-env

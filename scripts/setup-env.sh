@@ -16,6 +16,7 @@ PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$PROJECT_DIR"
 
 SDK_ROOT="$PROJECT_DIR/android-sdk"
+SDK_VERSION="31"
 
 echo -e "${BLUE}╔════════════════════════════════════════╗${NC}"
 echo -e "${BLUE}║  TermuxDroid Environment Setup         ║${NC}"
@@ -73,6 +74,7 @@ echo ""
 echo -e "${BLUE}📌 Environment Variables:${NC}"
 echo "   ANDROID_HOME=$SDK_ROOT"
 echo "   PATH includes: \$ANDROID_HOME/cmdline-tools/latest/bin"
+echo "   Target SDK: Android $SDK_VERSION"
 echo ""
 
 # Set environment for current session
