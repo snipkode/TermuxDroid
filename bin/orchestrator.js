@@ -27,7 +27,11 @@ const COMMANDS = {
   },
   'build:release': {
     script: './build.sh --release',
-    description: 'Build release APK',
+    description: 'Build release APK (unsigned)',
+  },
+  'build:aab': {
+    script: './build.sh --aab',
+    description: 'Build release AAB (for Play Store)',
   },
   doctor: {
     script: './setup-check.sh',

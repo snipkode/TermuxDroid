@@ -83,6 +83,7 @@ Quick commands via NPM:
 | `npm run dev` | **Dev mode with auto-reload** |
 | `npm run build` | Build debug APK |
 | `npm run build:release` | Build release APK (unsigned) |
+| `npm run build:aab` | Build AAB for Play Store |
 | `npm run doctor` | Check environment setup |
 | `npm run clean` | Clean build artifacts |
 | `npm run install` | Install APK to device |
@@ -101,7 +102,7 @@ node bin/orchestrator.js dev
 |---------|-------------|
 | `./build.sh` | Build debug APK (default) |
 | `./build.sh --release` | Build release APK (unsigned) |
-| `./build.sh --debug` | Build debug APK |
+| `./build.sh --aab` | Build AAB (for Google Play) |
 | `./setup-check.sh` | Check environment setup |
 | `./install-apk.sh` | Install APK to device |
 | `./run.sh` | Launch app on device |

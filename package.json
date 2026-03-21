@@ -7,6 +7,7 @@
     "dev": "node bin/orchestrator.js dev",
     "build": "node bin/orchestrator.js build",
     "build:release": "node bin/orchestrator.js build:release",
+    "build:aab": "node bin/orchestrator.js build:aab",
     "doctor": "node bin/orchestrator.js doctor",
     "run": "node bin/orchestrator.js",
     "clean": "node bin/orchestrator.js clean",
