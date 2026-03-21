@@ -5,8 +5,10 @@ export class XmlParserService {
     this.parser = new Parser({
       attrkey: '$',
       charkey: '_',
-      explicitArray: false,
-      mergeAttrs: true
+      explicitArray: true,
+      mergeAttrs: false,
+      explicitChildren: true,
+      childkey: '$$'
     });
   }
 
@@ -16,38 +18,43 @@ export class XmlParserService {
   }
 
   convertToComponentTree(xmlNode) {
-    if (!xmlNode) return null;
+    if (!xmlNode) return [];
 
-    // Get the root element (e.g., ConstraintLayout, LinearLayout)
+    // Get the root element
     const rootTag = Object.keys(xmlNode)[0];
     const rootNode = xmlNode[rootTag];
 
-    return this.processNode(rootTag, rootNode);
+    const component = this.processNode(rootTag, rootNode);
+    return component ? [component] : [];
   }
 
   processNode(tagName, node) {
     if (!node) return null;
 
+    // Extract attributes
+    const attrs = node.$ || {};
+    
     const component = {
-      id: this.extractId(node.$),
+      id: this.extractId(attrs),
       type: this.mapTagName(tagName),
-      properties: this.extractProperties(node.$),
+      properties: this.extractProperties(attrs),
       children: []
     };
 
-    // Process children - handle both array and single object
-    const childrenNodes = node.$$ ? (Array.isArray(node.$$) ? node.$$ : [node.$$]) : [];
-
-    if (childrenNodes.length > 0) {
-      component.children = childrenNodes
-        .map(child => {
-          const childTag = child['#name'] || Object.keys(child)[0];
-          return this.processNode(childTag, child);
-        })
-        .filter(Boolean);
+    // Process children - $$ is an object with tag names as keys
+    if (node.$$) {
+      const childrenArray = [];
+      for (const [childTag, children] of Object.entries(node.$$)) {
+        const childArray = Array.isArray(children) ? children : [children];
+        childArray.forEach(child => {
+          const processed = this.processNode(childTag, child);
+          if (processed) childrenArray.push(processed);
+        });
+      }
+      component.children = childrenArray;
     }
 
-    // Handle text content for TextView-like components
+    // Handle text content
     if (node._ && typeof node._ === 'string' && node._.trim()) {
       component.text = node._.trim();
     }
@@ -58,12 +65,12 @@ export class XmlParserService {
   extractId(attrs) {
     if (!attrs) return null;
     const id = attrs['android:id'];
-    return id ? id.replace('@+id/', '') : null;
+    return id ? id.replace('@+id/', '').replace('@id/', '') : null;
   }
 
   extractProperties(attrs) {
     if (!attrs) return {};
-    
+
     const props = {};
     for (const [key, value] of Object.entries(attrs)) {
       if (key.startsWith('android:')) {
@@ -72,15 +79,12 @@ export class XmlParserService {
         props[key] = value;
       } else if (key.startsWith('tools:')) {
         props[key] = value;
-      } else if (key !== 'id') {
-        props[key] = value;
       }
     }
     return props;
   }
 
   mapTagName(tagName) {
-    // Map XML tag names to component names
     const tagMap = {
       'androidx.constraintlayout.widget.ConstraintLayout': 'ConstraintLayout',
       'androidx.core.widget.NestedScrollView': 'NestedScrollView',

@@ -1,26 +1,212 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView>
-  <android.widget.RelativeLayout
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:TextView="[object Object]"
-    android:MaterialButton="[object Object]"
-    android:Button="[object Object]"
-    android:EditText="[object Object]"
-    android:ImageView="[object Object]"
-    android:LinearLayout="[object Object]"
-    android:ConstraintLayout="[object Object]"
-    android:MaterialCardView="[object Object]" />
-  <android.widget.TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Sample Text"
-    android:textSize="16sp"
-    android:textColor="#000000" />
-  <android.widget.TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Sample Text"
-    android:textSize="16sp"
-    android:textColor="#000000" />
+    android:background="@color/background"
+    android:fillViewport="true"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Header with Gradient -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/gradient_header"
+            android:padding="32dp"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🚀 TermuxDroid"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:shadowColor="#40000000"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="4" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Build Android App di Termux"
+                android:textSize="14sp"
+                android:textColor="#E3F2FD"
+                android:layout_marginTop="4dp"
+                android:alpha="0.9" />
+
+        </LinearLayout>
+
+        <!-- Main Content Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            app:cardBackgroundColor="@color/card_background"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/card_stroke"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <!-- Counter Display with Shadow Effect -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/counter_label"
+                    android:textSize="14sp"
+                    android:textColor="@color/on_surface_variant"
+                    android:textAllCaps="true"
+                    android:letterSpacing="0.1"
+                    android:fontFamily="sans-serif-medium" />
+
+                <TextView
+                    android:id="@+id/tvCounter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textSize="72sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/counter_text"
+                    android:layout_marginTop="8dp"
+                    android:shadowColor="#332196F3"
+                    android:shadowDx="0"
+                    android:shadowDy="4"
+                    android:shadowRadius="8" />
+
+                <!-- Counter Buttons -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnDecrement"
+                        android:layout_width="0dp"
+                        android:layout_height="64dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        android:text="@string/decrement"
+                        android:textSize="18sp"
+                        app:cornerRadius="16dp"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        app:strokeColor="@color/primary"
+                        app:strokeWidth="2dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnIncrement"
+                        android:layout_width="0dp"
+                        android:layout_height="64dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        android:text="@string/increment"
+                        android:textSize="18sp"
+                        app:cornerRadius="16dp"
+                        app:backgroundTint="@color/primary"
+                        app:icon="@android:drawable/ic_menu_add"
+                        app:iconGravity="textStart" />
+
+                </LinearLayout>
+
+                <!-- Reset Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnReset"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/reset"
+                    android:textSize="16sp"
+                    app:cornerRadius="16dp"
+                    app:backgroundTint="@color/surface_variant"
+                    android:textColor="@color/on_surface"
+                    style="@style/Widget.MaterialComponents.Button" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Device Info Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="@color/card_background"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/card_stroke"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="📱 Info Device"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/on_surface" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnShowInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/show_info"
+                    android:textSize="16sp"
+                    app:cornerRadius="16dp"
+                    app:icon="@android:drawable/ic_menu_info_details"
+                    app:iconGravity="textStart"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+                <!-- Device Info Display -->
+                <TextView
+                    android:id="@+id/tvInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:padding="20dp"
+                    android:background="@drawable/info_background"
+                    android:text="Klik 'Lihat Info Device' untuk detail"
+                    android:textSize="15sp"
+                    android:textColor="@color/on_surface_variant"
+                    android:lineSpacingExtra="6dp"
+                    android:fontFamily="monospace" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Footer -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Dibuat dengan ❤️ menggunakan TermuxDroid"
+            android:textSize="13sp"
+            android:textColor="@color/gray"
+            android:gravity="center"
+            android:paddingBottom="24dp" />
+
+    </LinearLayout>
+
 </androidx.core.widget.NestedScrollView>
