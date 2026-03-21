@@ -7,11 +7,9 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Paper,
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Chip,
 } from '@mui/material';
 import {
   ViewHeadline as LayoutIcon,
@@ -57,62 +55,68 @@ const ANDROID_COMPONENTS = {
 
 export default function Toolbox() {
   const { setDraggedType } = useCanvasStore();
-  
+
   const handleDragStart = (e, componentType) => {
     setDraggedType(componentType);
     e.dataTransfer.effectAllowed = 'copy';
     e.dataTransfer.setData('application/react-component', componentType);
   };
+
+  const handleDragEnd = () => {
+    // Clear dragged type after drag ends
+    setTimeout(() => setDraggedType(null), 100);
+  };
   
   return (
-    <Paper
+    <Box
       sx={{
-        width: 280,
-        borderRight: 1,
-        borderColor: 'divider',
+        height: '100%',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
       }}
     >
-      <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
-        <Typography variant="h6" fontSize={16}>
+      <Box sx={{ p: 1.5, borderBottom: 1, borderColor: 'divider', bgcolor: 'background.paper' }}>
+        <Typography variant="subtitle2" fontSize={13} fontWeight={600}>
           🧰 Toolbox
         </Typography>
         <Typography variant="caption" color="text.secondary">
-          Drag components to canvas
+          Drag to canvas
         </Typography>
       </Box>
-      
-      <Box sx={{ flex: 1, overflow: 'auto' }}>
+
+      <Box sx={{ flex: 1, overflow: 'auto', bgcolor: 'background.paper' }}>
         {Object.entries(ANDROID_COMPONENTS).map(([category, components]) => (
           <Accordion defaultExpanded key={category} disableGutters>
             <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
               sx={{
-                px: 2,
-                minHeight: 48,
+                px: 1.5,
+                minHeight: 40,
                 '& .MuiAccordionSummary-content': {
-                  my: 1,
+                  my: 0.75,
                 },
               }}
             >
-              <Typography variant="subtitle2" fontWeight={600}>
+              <Typography variant="caption" fontWeight={600} fontSize={11}>
                 {category}
               </Typography>
             </AccordionSummary>
-            
-            <AccordionDetails sx={{ p: 1 }}>
+
+            <AccordionDetails sx={{ p: 0.5 }}>
               <List dense>
                 {components.map((component) => (
                   <ListItem key={component.type} disablePadding>
                     <ListItemButton
                       draggable
                       onDragStart={(e) => handleDragStart(e, component.type)}
+                      onDragEnd={handleDragEnd}
                       sx={{
-                        borderRadius: 1,
-                        mb: 0.5,
+                        borderRadius: 0.75,
+                        mb: 0.25,
                         cursor: 'grab',
+                        px: 1,
+                        py: 0.5,
                         '&:active': {
                           cursor: 'grabbing',
                         },
@@ -121,14 +125,14 @@ export default function Toolbox() {
                         },
                       }}
                     >
-                      <ListItemIcon sx={{ minWidth: 36, color: 'primary.main' }}>
-                        {component.icon}
+                      <ListItemIcon sx={{ minWidth: 32, color: 'primary.main' }}>
+                        {React.cloneElement(component.icon, { fontSize: 'small' })}
                       </ListItemIcon>
                       <ListItemText
                         primary={component.type}
                         secondary={component.description}
-                        primaryTypographyProps={{ fontSize: 13, fontWeight: 500 }}
-                        secondaryTypographyProps={{ fontSize: 11 }}
+                        primaryTypographyProps={{ fontSize: 12, fontWeight: 500 }}
+                        secondaryTypographyProps={{ fontSize: 10, noWrap: true }}
                       />
                     </ListItemButton>
                   </ListItem>
@@ -138,12 +142,12 @@ export default function Toolbox() {
           </Accordion>
         ))}
       </Box>
-      
-      <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider', bgcolor: 'action.hover' }}>
+
+      <Box sx={{ p: 1.5, borderTop: 1, borderColor: 'divider', bgcolor: 'action.hover' }}>
         <Typography variant="caption" color="text.secondary">
-          💡 Tip: Drag and drop components onto the canvas to build your UI
+          💡 Drag components to canvas
         </Typography>
       </Box>
-    </Paper>
+    </Box>
   );
 }

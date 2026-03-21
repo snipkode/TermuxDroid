@@ -1,18 +1,33 @@
 {
-  "name": "termuxdroid-gui-builder",
+  "name": "termuxdroid-orchestrator",
   "version": "1.0.0",
   "type": "module",
-  "description": "GUI Builder for TermuxDroid - Visual drag-and-drop editor",
+  "description": "TermuxDroid - Native Android Development Framework with GUI Builder",
   "scripts": {
-    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
-    "dev:backend": "cd IDE/backend && npm run dev",
-    "dev:frontend": "cd IDE/frontend && npm run dev",
+    "dev": "node bin/orchestrator.js dev",
+    "build": "node bin/orchestrator.js build",
+    "build:release": "node bin/orchestrator.js build:release",
+    "build:aab": "node bin/orchestrator.js build:aab",
+    "doctor": "node bin/orchestrator.js doctor",
+    "keystore": "node bin/orchestrator.js keystore",
+    "run": "node bin/orchestrator.js",
+    "clean": "node bin/orchestrator.js clean",
+    "install": "node bin/orchestrator.js install",
+    
     "gui": "node bin/gui-builder.js",
-    "install:all": "npm install && cd IDE/backend && npm install && cd ../frontend && npm install",
-    "start:backend": "cd IDE/backend && npm start",
-    "start:frontend": "cd IDE/frontend && npm run build && npm run preview"
+    "gui:dev": "concurrently \"npm run gui:backend\" \"npm run gui:frontend\"",
+    "gui:backend": "cd IDE/backend && npm run dev",
+    "gui:frontend": "cd IDE/frontend && npm run dev",
+    
+    "install:all": "npm install && cd IDE/backend && npm install && cd ../frontend && npm install"
   },
-  "keywords": ["gui-builder", "termuxdroid", "android", "visual-editor"],
+  "keywords": [
+    "orchestrator",
+    "termux",
+    "android",
+    "gui-builder",
+    "visual-editor"
+  ],
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^8.2.2"

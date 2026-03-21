@@ -16,8 +16,13 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
     </style>
 
-    <!-- Button style -->
+            <!-- Button style -->
     <style name="Theme.MyApp.Button" parent="Widget.MaterialComponents.Button">
-        <item name="cornerRadius">8dp</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="backgroundTint">#FFF44336</item>
+        <item name="android:textColor">#FFFFFFFF</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:elevation">4dp</item>
     </style>
 </resources>

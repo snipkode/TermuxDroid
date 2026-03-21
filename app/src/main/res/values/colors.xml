@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Primary colors - Modern Blue Gradient -->
-    <color name="primary">#FF2196F3</color>
-    <color name="primary_dark">#FF1976D2</color>
+    <color name="primary">#FFF44336</color>
+    <color name="primary_dark">#FFD32F2F</color>
     <color name="primary_light">#FF64B5F6</color>
-    <color name="accent">#FF00BCD4</color>
+    <color name="accent">#FFFF5252</color>
     <color name="accent_variant">#FF26C6DA</color>
 
     <!-- Gradient colors -->

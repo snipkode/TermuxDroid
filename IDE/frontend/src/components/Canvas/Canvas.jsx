@@ -25,15 +25,21 @@ export default function Canvas({ components, onChange }) {
     removeComponent,
     zoom,
   } = useCanvasStore();
-  
+
   const handleDragOver = useCallback((e) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'copy';
   }, []);
-  
+
+  const handleDropRoot = useCallback(() => {
+    if (onChange) {
+      onChange();
+    }
+  }, [onChange]);
+
   const handleDrop = useCallback((e, targetId = null) => {
     e.preventDefault();
-    
+
     if (draggedType) {
       const newComponent = {
         id: `${draggedType.toLowerCase()}_${Date.now()}`,
@@ -41,13 +47,11 @@ export default function Canvas({ components, onChange }) {
         properties: getDefaultProperties(draggedType),
         children: [],
       };
-      
+
       addComponent(newComponent, targetId || components?.id);
-      
+
       if (onChange) {
-        // Trigger save after drop
-        const updatedComponents = JSON.parse(JSON.stringify(components));
-        onChange(updatedComponents);
+        onChange();
       }
     }
   }, [draggedType, components, addComponent, onChange]);
@@ -101,14 +105,15 @@ export default function Canvas({ components, onChange }) {
       {/* Canvas Toolbar */}
       <Box
         sx={{
-          px: 2,
-          py: 1,
+          px: 1.5,
+          py: 0.75,
           borderBottom: 1,
           borderColor: 'divider',
           bgcolor: 'paper',
           display: 'flex',
           alignItems: 'center',
-          gap: 1,
+          gap: 0.75,
+          minHeight: 40,
         }}
       >
         <Chip
@@ -116,23 +121,25 @@ export default function Canvas({ components, onChange }) {
           size="small"
           color="primary"
           variant="outlined"
+          sx={{ height: 24, fontSize: 11 }}
         />
-        
-        <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
+
+        <Typography variant="caption" color="text.secondary" fontSize={11}>
           {components.id || 'root'}
         </Typography>
-        
+
         <Box sx={{ flexGrow: 1 }} />
-        
+
         {selectedId && (
-          <Box sx={{ display: 'flex', gap: 0.5 }}>
+          <Box sx={{ display: 'flex', gap: 0.25 }}>
             <Tooltip title="Delete Component">
               <IconButton
                 size="small"
                 color="error"
                 onClick={handleDeleteComponent}
+                sx={{ p: 0.5 }}
               >
-                <DeleteIcon />
+                <DeleteIcon fontSize="small" />
               </IconButton>
             </Tooltip>
           </Box>
@@ -144,7 +151,7 @@ export default function Canvas({ components, onChange }) {
         sx={{
           flex: 1,
           overflow: 'auto',
-          p: 3,
+          p: 2,
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'flex-start',
@@ -178,32 +185,35 @@ export default function Canvas({ components, onChange }) {
               depth={0}
               selectedId={selectedId}
               onSelect={handleSelectComponent}
+              onDrop={handleDropRoot}
+              draggedType={draggedType}
             />
           </Box>
         </Paper>
       </Box>
-      
+
       {/* Canvas Info */}
       <Box
         sx={{
-          px: 2,
-          py: 1,
+          px: 1.5,
+          py: 0.5,
           borderTop: 1,
           borderColor: 'divider',
           bgcolor: 'action.hover',
           display: 'flex',
           alignItems: 'center',
-          gap: 1,
+          gap: 0.75,
+          minHeight: 28,
         }}
       >
-        <Typography variant="caption" color="text.secondary">
-          📱 Device Preview (375x667)
+        <Typography variant="caption" color="text.secondary" fontSize={10}>
+          📱 375x667
         </Typography>
-        <Typography variant="caption" color="text.secondary">
+        <Typography variant="caption" color="text.secondary" fontSize={10}>
           •
         </Typography>
-        <Typography variant="caption" color="text.secondary">
-          Zoom: {Math.round(zoom * 100)}%
+        <Typography variant="caption" color="text.secondary" fontSize={10}>
+          {Math.round(zoom * 100)}%
         </Typography>
       </Box>
     </Box>

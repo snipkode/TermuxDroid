@@ -13,10 +13,17 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const ROOT = join(__dirname, '..');
 
-console.log('🎨 Starting GUI Builder for TermuxDroid...\n');
+console.log(`
+╔═══════════════════════════════════════════════════════════╗
+║         🎨 GUI Builder for TermuxDroid                     ║
+║         Visual Drag & Drop Editor for Android UI           ║
+╚═══════════════════════════════════════════════════════════╝
+
+📦 Starting servers...
+`);
 
 // Start backend
-console.log('📦 Starting backend server...');
+console.log('▶️  Backend: http://localhost:5000');
 const backend = spawn('npm', ['run', 'dev'], {
   cwd: join(ROOT, 'IDE', 'backend'),
   stdio: 'inherit',
@@ -29,7 +36,10 @@ backend.on('error', (err) => {
 
 // Wait a bit for backend to start, then start frontend
 setTimeout(() => {
-  console.log('\n🎨 Starting frontend dev server...');
+  console.log('\n▶️  Frontend: http://localhost:3000');
+  console.log('\n✨ Open browser: http://localhost:3000\n');
+  console.log('─'.repeat(60));
+  
   const frontend = spawn('npm', ['run', 'dev'], {
     cwd: join(ROOT, 'IDE', 'frontend'),
     stdio: 'inherit',
@@ -43,6 +53,12 @@ setTimeout(() => {
 
 // Handle process exit
 process.on('SIGINT', () => {
+  console.log('\n\n👋 Shutting down GUI Builder...');
+  backend.kill();
+  process.exit(0);
+});
+
+process.on('SIGTERM', () => {
   console.log('\n\n👋 Shutting down GUI Builder...');
   backend.kill();
   process.exit(0);

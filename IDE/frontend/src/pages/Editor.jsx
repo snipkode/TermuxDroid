@@ -12,6 +12,8 @@ import {
   Divider,
   IconButton,
   Tooltip,
+  Drawer,
+  CssBaseline,
 } from '@mui/material';
 import {
   Build as BuildIcon,
@@ -21,6 +23,9 @@ import {
   ZoomIn as ZoomInIcon,
   ZoomOut as ZoomOutIcon,
   Save as SaveIcon,
+  Menu as MenuIcon,
+  ChevronLeft as ChevronLeftIcon,
+  ChevronRight as ChevronRightIcon,
 } from '@mui/icons-material';
 import { useProjectStore } from '@stores/projectStore';
 import { useCanvasStore } from '@stores/canvasStore';
@@ -44,7 +49,7 @@ export default function Editor() {
     buildProject,
     clearError,
   } = useProjectStore();
-  
+
   const {
     components,
     loadComponents,
@@ -56,8 +61,13 @@ export default function Editor() {
     zoom,
     setZoom,
   } = useCanvasStore();
-  
+
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const [drawerOpen, setDrawerOpen] = useState(true);
+
+  const toggleDrawer = () => {
+    setDrawerOpen(prev => !prev);
+  };
 
   useEffect(() => {
     // Load existing TermuxDroid project on mount
@@ -138,16 +148,27 @@ export default function Editor() {
     <Box sx={{ flexGrow: 1, height: '100vh', display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
       <AppBar position="static" elevation={0} sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Toolbar variant="dense">
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+        <Toolbar variant="dense" sx={{ minHeight: 48, py: 0.5 }}>
+          <Typography variant="subtitle1" sx={{ flexGrow: 1, fontWeight: 600, fontSize: 14 }}>
             🎨 GUI Builder
-            <Chip 
-              label={project?.name || 'TermuxDroid'} 
-              size="small" 
-              sx={{ ml: 1, bgcolor: 'rgba(255,255,255,0.2)' }} 
+            <Chip
+              label={project?.name || 'TermuxDroid'}
+              size="small"
+              sx={{ ml: 1, bgcolor: 'rgba(255,255,255,0.15)', height: 20, fontSize: 11 }}
             />
           </Typography>
-          
+
+          {/* Toggle Drawer Button */}
+          <Tooltip title={drawerOpen ? 'Close Toolbox' : 'Open Toolbox'}>
+            <IconButton
+              size="small"
+              onClick={toggleDrawer}
+              sx={{ color: 'inherit', mr: 1 }}
+            >
+              {drawerOpen ? <ChevronLeftIcon fontSize="small" /> : <ChevronRightIcon fontSize="small" />}
+            </IconButton>
+          </Tooltip>
+
           {/* Layout Selector */}
           {layouts.length > 0 && (
             <LayoutSelector
@@ -156,77 +177,78 @@ export default function Editor() {
               onChange={handleLayoutChange}
             />
           )}
-          
-          <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
-          
+
+          <Divider orientation="vertical" flexItem sx={{ mx: 0.75 }} />
+
           {/* Undo/Redo */}
           <Tooltip title="Undo (Ctrl+Z)">
             <span>
-              <IconButton 
-                size="small" 
-                onClick={handleUndo} 
+              <IconButton
+                size="small"
+                onClick={handleUndo}
                 disabled={!canUndo()}
-                sx={{ color: 'inherit' }}
+                sx={{ color: 'inherit', p: 0.5 }}
               >
-                <UndoIcon />
+                <UndoIcon fontSize="small" />
               </IconButton>
             </span>
           </Tooltip>
-          
+
           <Tooltip title="Redo (Ctrl+Y)">
             <span>
-              <IconButton 
-                size="small" 
-                onClick={handleRedo} 
+              <IconButton
+                size="small"
+                onClick={handleRedo}
                 disabled={!canRedo()}
-                sx={{ color: 'inherit' }}
+                sx={{ color: 'inherit', p: 0.5 }}
               >
-                <RedoIcon />
+                <RedoIcon fontSize="small" />
               </IconButton>
             </span>
           </Tooltip>
-          
-          <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
-          
+
+          <Divider orientation="vertical" flexItem sx={{ mx: 0.75 }} />
+
           {/* Zoom Controls */}
           <Tooltip title="Zoom Out">
-            <IconButton size="small" onClick={handleZoomOut} sx={{ color: 'inherit' }}>
-              <ZoomOutIcon />
+            <IconButton size="small" onClick={handleZoomOut} sx={{ color: 'inherit', p: 0.5 }}>
+              <ZoomOutIcon fontSize="small" />
             </IconButton>
           </Tooltip>
-          
-          <Typography variant="body2" sx={{ mx: 1, minWidth: 50, textAlign: 'center' }}>
+
+          <Typography variant="caption" sx={{ mx: 0.5, minWidth: 40, textAlign: 'center', fontSize: 11 }}>
             {Math.round(zoom * 100)}%
           </Typography>
-          
+
           <Tooltip title="Zoom In">
-            <IconButton size="small" onClick={handleZoomIn} sx={{ color: 'inherit' }}>
-              <ZoomInIcon />
+            <IconButton size="small" onClick={handleZoomIn} sx={{ color: 'inherit', p: 0.5 }}>
+              <ZoomInIcon fontSize="small" />
             </IconButton>
           </Tooltip>
-          
-          <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
-          
+
+          <Divider orientation="vertical" flexItem sx={{ mx: 0.75 }} />
+
           {/* Build Button */}
           <Button
             color="inherit"
             variant="contained"
-            startIcon={isBuilding ? <CircularProgress size={20} /> : <BuildIcon />}
+            startIcon={isBuilding ? <CircularProgress size={16} /> : <BuildIcon fontSize="small" />}
             onClick={handleBuild}
             disabled={isBuilding || isLoading}
-            sx={{ ml: 1 }}
+            sx={{ ml: 0.75, fontSize: 12, px: 1.5, minHeight: 32 }}
           >
-            {isBuilding ? 'Building...' : 'Build APK'}
+            {isBuilding ? 'Building...' : 'Build'}
           </Button>
         </Toolbar>
-        
+
         {/* Build Status Bar */}
         {buildStatus && (
-          <Box sx={{ px: 2, pb: 1 }}>
-            <Alert 
-              severity={buildStatus.includes('failed') ? 'error' : 'success'} 
+          <Box sx={{ px: 1.5, pb: 0.75 }}>
+            <Alert
+              severity={buildStatus.includes('failed') ? 'error' : 'success'}
               size="small"
               onClose={() => clearError()}
+              sx={{ fontSize: 12 }}
             >
               {buildStatus}
             </Alert>
@@ -235,16 +257,42 @@ export default function Editor() {
       </AppBar>
       
       {/* Main Content */}
-      <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-        {/* Left: Toolbox */}
-        <Toolbox />
-        
+      <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden', position: 'relative' }}>
+        {/* Left: Toolbox Drawer */}
+        <Drawer
+          variant="persistent"
+          open={drawerOpen}
+          sx={{
+            width: drawerOpen ? 240 : 0,
+            flexShrink: 0,
+            '& .MuiDrawer-paper': {
+              width: 240,
+              boxSizing: 'border-box',
+              borderRight: 'none',
+              boxShadow: '2px 0 8px rgba(0,0,0,0.1)',
+            },
+          }}
+        >
+          <Toolbox />
+        </Drawer>
+
         {/* Center: Canvas */}
-        <Canvas 
-          components={components}
-          onChange={handleComponentChange}
-        />
-        
+        <Box
+          sx={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+            transition: 'margin-left 0.3s ease-in-out',
+            marginLeft: drawerOpen ? 0 : `-240px`,
+          }}
+        >
+          <Canvas
+            components={components}
+            onChange={handleComponentChange}
+          />
+        </Box>
+
         {/* Right: Properties Panel */}
         <PropertiesPanel />
       </Box>
