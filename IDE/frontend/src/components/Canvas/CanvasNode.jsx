@@ -5,8 +5,10 @@ import { useCanvasStore } from '@stores/canvasStore';
 export default function CanvasNode({ component, depth = 0, selectedId, onSelect, onDrop, draggedType }) {
   const { setDropTarget, addComponent, dropTargetId } = useCanvasStore();
 
-  const isSelected = component.id === selectedId;
-  const isDropTarget = dropTargetId === component.id && draggedType;
+  // Use component reference for selection if no ID
+  const componentKey = component.id || component._ref || JSON.stringify(component);
+  const isSelected = selectedId && (component.id === selectedId || componentKey === selectedId);
+  const isDropTarget = dropTargetId && (component.id === dropTargetId || componentKey === dropTargetId);
 
   const handleDragOver = useCallback((e) => {
     e.preventDefault();
@@ -37,17 +39,22 @@ export default function CanvasNode({ component, depth = 0, selectedId, onSelect,
 
   const handleClick = useCallback((e) => {
     e.stopPropagation();
-    onSelect(component.id);
-  }, [component.id, onSelect]);
+    onSelect(componentKey);
+  }, [componentKey, onSelect]);
   
   const renderComponent = () => {
-    const { type, properties, children } = component;
+    const { type, properties, children, text, id } = component;
+
+    // Get display text from properties or text field
+    const displayText = properties?.text || text || '';
+    const textColor = properties?.textColor || '#000000';
+    const textSize = properties?.textSize || '14sp';
 
     const baseStyles = {
-      border: isDropTarget 
-        ? '2px solid #4CAF50' 
-        : isSelected 
-          ? '2px solid #2196F3' 
+      border: isDropTarget
+        ? '2px solid #4CAF50'
+        : isSelected
+          ? '2px solid #2196F3'
           : '1px dashed #ccc',
       borderRadius: 0.75,
       p: 0.75,
@@ -56,8 +63,8 @@ export default function CanvasNode({ component, depth = 0, selectedId, onSelect,
       transition: 'all 0.2s',
       bgcolor: isDropTarget
         ? 'rgba(76, 175, 80, 0.15)'
-        : isSelected 
-          ? 'rgba(33, 150, 243, 0.08)' 
+        : isSelected
+          ? 'rgba(33, 150, 243, 0.08)'
           : 'transparent',
       '&:hover': {
         bgcolor: 'rgba(33, 150, 243, 0.04)',
@@ -73,11 +80,13 @@ export default function CanvasNode({ component, depth = 0, selectedId, onSelect,
             variant="body2"
             sx={{
               ...baseStyles,
-              fontSize: properties.textSize || '14sp',
-              color: properties.textColor || '#000000',
+              fontSize: typeof textSize === 'string' ? textSize : `${textSize}px`,
+              color: textColor,
+              fontWeight: properties?.textStyle === 'bold' ? 'bold' : 'normal',
             }}
           >
-            📝 {properties.text || 'TextView'}
+            📝 {displayText || 'TextView'}
+            {id && <Typography component="span" fontSize={9} color="text.secondary" sx={{ ml: 0.5 }}>#{id}</Typography>}
           </Typography>
         );
 
@@ -87,17 +96,18 @@ export default function CanvasNode({ component, depth = 0, selectedId, onSelect,
           <Box
             sx={{
               ...baseStyles,
-              bgcolor: properties.background || '#2196F3',
-              color: '#FFFFFF',
-              py: 0.5,
-              px: 1,
+              bgcolor: properties?.background || properties?.backgroundTint || '#2196F3',
+              color: properties?.textColor || '#FFFFFF',
+              py: 0.75,
+              px: 1.5,
               textAlign: 'center',
-              borderRadius: 1,
+              borderRadius: properties?.cornerRadius ? `${parseInt(properties.cornerRadius)}px` : 1,
               fontWeight: 500,
-              fontSize: 12,
+              fontSize: 13,
             }}
           >
-            🔘 {properties.text || 'Button'}
+            🔘 {displayText || 'Button'}
+            {id && <Typography component="span" fontSize={9} color="inherit" sx={{ ml: 0.5, opacity: 0.8 }}>#{id}</Typography>}
           </Box>
         );
 
@@ -147,9 +157,16 @@ export default function CanvasNode({ component, depth = 0, selectedId, onSelect,
               bgcolor: 'rgba(33, 150, 243, 0.02)',
             }}
           >
-            <Typography variant="caption" color="primary" fontWeight={600} fontSize={10}>
-              📦 {properties.orientation || 'vertical'}: LinearLayout
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.75 }}>
+              <Typography variant="caption" color="primary" fontWeight={600} fontSize={10}>
+                📦 {properties?.orientation || 'vertical'}: LinearLayout
+              </Typography>
+              {id && (
+                <Typography component="span" variant="caption" fontSize={9} color="text.secondary">
+                  #{id}
+                </Typography>
+              )}
+            </Box>
             <Box sx={{ mt: 0.75 }}>
               {children?.map((child, index) => (
                 <CanvasNode
@@ -236,9 +253,16 @@ export default function CanvasNode({ component, depth = 0, selectedId, onSelect,
               bgcolor: 'rgba(255, 183, 77, 0.02)',
             }}
           >
-            <Typography variant="caption" color="primary" fontWeight={600} fontSize={10}>
-              📜 NestedScrollView
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.75 }}>
+              <Typography variant="caption" color="primary" fontWeight={600} fontSize={10}>
+                📜 NestedScrollView
+              </Typography>
+              {id && (
+                <Typography component="span" variant="caption" fontSize={9} color="text.secondary">
+                  #{id}
+                </Typography>
+              )}
+            </Box>
             <Box sx={{ mt: 0.75 }}>
               {children?.map((child, index) => (
                 <CanvasNode
@@ -264,12 +288,19 @@ export default function CanvasNode({ component, depth = 0, selectedId, onSelect,
               border: isSelected ? '2px solid #2196F3' : '1px solid #E0E0E0',
               p: 1.5,
               mb: 0.75,
-              bgcolor: 'rgba(255, 255, 255, 0.5)',
+              bgcolor: 'rgba(255, 255, 255, 0.8)',
             }}
           >
-            <Typography variant="caption" color="primary" fontWeight={600} fontSize={10}>
-              📇 MaterialCardView
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.75 }}>
+              <Typography variant="caption" color="primary" fontWeight={600} fontSize={10}>
+                📇 MaterialCardView
+              </Typography>
+              {id && (
+                <Typography component="span" variant="caption" fontSize={9} color="text.secondary">
+                  #{id}
+                </Typography>
+              )}
+            </Box>
             <Box sx={{ mt: 0.75 }}>
               {children?.map((child, index) => (
                 <CanvasNode
