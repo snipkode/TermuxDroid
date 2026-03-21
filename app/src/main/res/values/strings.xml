@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">My Native App</string>
+    <string name="counter_label">Counter</string>
+    <string name="increment">+ Increment</string>
+    <string name="decrement">- Decrement</string>
+    <string name="reset">Reset</string>
+    <string name="show_info">Show Device Info</string>
+    <string name="device_info">Device Information</string>
+</resources>

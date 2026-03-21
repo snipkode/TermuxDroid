@@ -1,0 +1,56 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.myapp'
+    compileSdk 33
+
+    defaultConfig {
+        applicationId "com.myapp"
+        minSdk 21
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+            minifyEnabled false
+            buildConfigField "String", "VERSION_NAME", "\"1.0\""
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "VERSION_NAME", "\"1.0\""
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+}
+
+dependencies {
+    // Force consistent Kotlin version
+    implementation platform('org.jetbrains.kotlin:kotlin-bom:1.8.10')
+    
+    // AndroidX Core
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.activity:activity:1.7.2'
+    
+    // Lifecycle
+    implementation 'androidx.lifecycle:lifecycle-runtime:2.6.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.6.1'
+    
+    // Kotlin stdlib (aligned with BOM)
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.8.10'
+}
