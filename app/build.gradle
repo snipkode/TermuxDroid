@@ -30,11 +30,11 @@ android {
             keyPassword 'android'
         }
         release {
-            // Priority: 1) Env vars, 2) keystore.properties, 3) Empty (will fail)
-            storeFile rootProject.file("keystore/release.keystore")
-            storePassword System.getenv('KEYSTORE_PASSWORD') ?: System.getenv('KEYSTORE_PASS') ?: keystoreProperties['storePassword'] ?: ''
-            keyAlias System.getenv('KEY_ALIAS') ?: keystoreProperties['keyAlias'] ?: ''
-            keyPassword System.getenv('KEY_PASSWORD') ?: System.getenv('KEY_ALIAS_PASS') ?: keystoreProperties['keyPassword'] ?: keystoreProperties['storePassword'] ?: ''
+            // Use debug keystore for development
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
         }
     }
 
