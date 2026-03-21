@@ -48,8 +48,17 @@ echo ""
 
 # Install initial APK
 echo -e "${YELLOW}📥 Installing...${NC}"
-$ADB -s "$DEVICE" install -r "$APK_PATH" > /dev/null 2>&1
-echo -e "${GREEN}✅ Installed${NC}"
+
+# Uninstall first to avoid signature conflicts
+$ADB -s "$DEVICE" uninstall $PACKAGE > /dev/null 2>&1
+
+if $ADB -s "$DEVICE" install -r "$APK_PATH" > /dev/null 2>&1; then
+    echo -e "${GREEN}✅ Installed${NC}"
+else
+    echo -e "${RED}❌ Install failed${NC}"
+    echo "Trying with -t flag..."
+    $ADB -s "$DEVICE" install -r -t "$APK_PATH"
+fi
 echo ""
 
 # Launch app
@@ -70,7 +79,7 @@ if command -v inotifywait &> /dev/null; then
             --exclude 'build/' \
             --exclude '.git/' \
             app/src/main/java/ app/src/main/res/ 2>/dev/null)
-        
+
         if [ -n "$CHANGED_FILE" ]; then
             echo -e "${YELLOW}⚡ Change detected: $CHANGED_FILE${NC}"
             echo -e "${BLUE}📦 Building...${NC}"
@@ -83,6 +92,9 @@ if command -v inotifywait &> /dev/null; then
                 echo -e "${GREEN}✅ Build success${NC}"
                 echo -e "${BLUE}📥 Installing...${NC}"
 
+                # Uninstall first to avoid signature conflicts
+                $ADB -s "$DEVICE" uninstall $PACKAGE > /dev/null 2>&1
+
                 if $ADB -s "$DEVICE" install -r "$APK_PATH" > /dev/null 2>&1; then
                     echo -e "${GREEN}✅ Installed${NC}"
                     echo -e "${BLUE}🚀 Restarting app...${NC}"
@@ -92,6 +104,10 @@ if command -v inotifywait &> /dev/null; then
                     echo -e "${GREEN}✅ App restarted${NC}"
                 else
                     echo -e "${RED}❌ Install failed${NC}"
+                    echo "Trying with -t flag..."
+                    if $ADB -s "$DEVICE" install -r -t "$APK_PATH" > /dev/null 2>&1; then
+                        echo -e "${GREEN}✅ Installed with -t flag${NC}"
+                    fi
                 fi
             else
                 echo -e "${RED}❌ Build failed!${NC}"
@@ -129,6 +145,9 @@ else
                 echo -e "${GREEN}✅ Build success${NC}"
                 echo -e "${BLUE}📥 Installing...${NC}"
 
+                # Uninstall first to avoid signature conflicts
+                $ADB -s "$DEVICE" uninstall $PACKAGE > /dev/null 2>&1
+
                 if $ADB -s "$DEVICE" install -r "$APK_PATH" > /dev/null 2>&1; then
                     echo -e "${GREEN}✅ Installed${NC}"
                     echo -e "${BLUE}🚀 Restarting app...${NC}"
@@ -138,6 +157,10 @@ else
                     echo -e "${GREEN}✅ App restarted${NC}"
                 else
                     echo -e "${RED}❌ Install failed${NC}"
+                    echo "Trying with -t flag..."
+                    if $ADB -s "$DEVICE" install -r -t "$APK_PATH" > /dev/null 2>&1; then
+                        echo -e "${GREEN}✅ Installed with -t flag${NC}"
+                    fi
                 fi
             else
                 echo -e "${RED}❌ Build failed!${NC}"
