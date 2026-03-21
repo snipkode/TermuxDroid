@@ -37,6 +37,7 @@ INSTALL_CORE=true
 INSTALL_SIGNING=true
 INSTALL_OPTIONAL=true
 INSTALL_AAB=true
+INSTALL_SDK=false
 FORCE_REINSTALL=false
 SHOW_HELP=false
 SKIP_INTERACTIVE=false
@@ -47,24 +48,36 @@ while [[ $# -gt 0 ]]; do
             INSTALL_SIGNING=false
             INSTALL_OPTIONAL=false
             INSTALL_AAB=false
+            INSTALL_SDK=false
             shift
             ;;
         --signing)
             INSTALL_CORE=false
             INSTALL_OPTIONAL=false
             INSTALL_AAB=false
+            INSTALL_SDK=false
             shift
             ;;
         --optional)
             INSTALL_CORE=false
             INSTALL_SIGNING=false
             INSTALL_AAB=false
+            INSTALL_SDK=false
             shift
             ;;
         --aab)
             INSTALL_CORE=false
             INSTALL_SIGNING=false
             INSTALL_OPTIONAL=false
+            INSTALL_SDK=false
+            shift
+            ;;
+        --sdk)
+            INSTALL_CORE=false
+            INSTALL_SIGNING=false
+            INSTALL_OPTIONAL=false
+            INSTALL_AAB=false
+            INSTALL_SDK=true
             shift
             ;;
         --all)
@@ -72,6 +85,7 @@ while [[ $# -gt 0 ]]; do
             INSTALL_SIGNING=true
             INSTALL_OPTIONAL=true
             INSTALL_AAB=true
+            INSTALL_SDK=true
             shift
             ;;
         --force)
@@ -102,6 +116,7 @@ if [ "$SHOW_HELP" = true ]; then
     echo "  --signing    Install only signing tools (apksigner, zipalign)"
     echo "  --optional   Install only optional tools (inotify-tools, procps-ng)"
     echo "  --aab        Install only AAB tools (bundletool)"
+    echo "  --sdk        Install Android SDK (commandlinetools from Google)"
     echo "  --all        Install all dependencies (default)"
     echo "  --force      Force reinstall all packages"
     echo "  --yes, -y    Skip interactive prompts (auto-confirm)"
@@ -110,7 +125,7 @@ if [ "$SHOW_HELP" = true ]; then
     echo "Examples:"
     echo "  $0              # Install all dependencies"
     echo "  $0 --core       # Install only core dependencies"
-    echo "  $0 --signing    # Install only signing tools"
+    echo "  $0 --sdk        # Install Android SDK only"
     echo "  $0 --all -y     # Install all without prompts"
     exit 0
 fi
@@ -201,6 +216,99 @@ EOF
         return 0
     else
         echo -e "${RED}✗${NC} Failed to install bundletool"
+        return 1
+    fi
+}
+
+# Function to install Android SDK
+install_android_sdk() {
+    echo -e "${BLUE}📋 Installing Android SDK...${NC}"
+    echo "─────────────────────────────────────"
+
+    SDK_ROOT="$PROJECT_DIR/android-sdk"
+    CMDLINE_TOOLS_URL="https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip"
+    CMDLINE_DIR="$SDK_ROOT/cmdline-tools"
+    LATEST_DIR="$CMDLINE_DIR/latest"
+
+    # Check if SDK is already installed
+    if [ -f "$LATEST_DIR/bin/sdkmanager" ] && [ "$FORCE_REINSTALL" = false ]; then
+        echo -e "${GREEN}✓${NC} Android SDK (already installed)"
+        echo "   Location: $SDK_ROOT"
+        echo ""
+        echo -e "${YELLOW}ℹ${NC} To reinstall, use --force flag"
+        return 0
+    fi
+
+    echo -e "${YELLOW}📦 Installing: Android SDK Command-line Tools${NC}"
+
+    # Create SDK directory
+    mkdir -p "$SDK_ROOT"
+    mkdir -p "$CMDLINE_DIR"
+
+    # Download command-line tools
+    TEMP_ZIP="/sdcard/download/cmdline-tools.zip"
+    echo -e "${BLUE}   Downloading from Google...${NC}"
+    echo "   URL: $CMDLINE_TOOLS_URL"
+    
+    # Check if wget is available
+    if command -v wget &> /dev/null; then
+        wget -q --show-progress "$CMDLINE_TOOLS_URL" -O "$TEMP_ZIP" 2>/dev/null
+    elif command -v curl &> /dev/null; then
+        curl -L "$CMDLINE_TOOLS_URL" -o "$TEMP_ZIP" 2>/dev/null
+    else
+        echo -e "${RED}✗${NC} Neither wget nor curl found"
+        return 1
+    fi
+
+    if [ ! -f "$TEMP_ZIP" ]; then
+        echo -e "${RED}✗${NC} Failed to download Android SDK"
+        return 1
+    fi
+
+    # Extract
+    echo -e "${BLUE}   Extracting...${NC}"
+    unzip -q "$TEMP_ZIP" -d "$CMDLINE_DIR" 2>/dev/null
+    
+    # The zip extracts to 'cmdline-tools', rename to 'latest'
+    if [ -d "$CMDLINE_DIR/cmdline-tools" ]; then
+        mv "$CMDLINE_DIR/cmdline-tools" "$LATEST_DIR"
+    fi
+
+    # Clean up
+    rm -f "$TEMP_ZIP"
+
+    if [ -f "$LATEST_DIR/bin/sdkmanager" ]; then
+        echo -e "${GREEN}✓${NC} Android SDK installed successfully"
+        echo "   Location: $SDK_ROOT"
+        echo ""
+        
+        # Accept licenses automatically
+        echo -e "${BLUE}   Accepting SDK licenses...${NC}"
+        yes | "$LATEST_DIR/bin/sdkmanager" --licenses > /dev/null 2>&1 || true
+        
+        # Install essential packages
+        echo -e "${BLUE}   Installing essential packages...${NC}"
+        echo "   - build-tools;34.0.0"
+        echo "   - platforms;android-34"
+        echo "   - platform-tools (uses Termux ADB, skipped)"
+        
+        # Install build-tools and platform (skip platform-tools since we use Termux adb)
+        "$LATEST_DIR/bin/sdkmanager" "build-tools;34.0.0" "platforms;android-34" 2>/dev/null
+        
+        echo ""
+        echo -e "${GREEN}✓${NC} SDK packages installed"
+        echo ""
+        
+        # Setup environment hint
+        echo -e "${YELLOW}📌 Environment Setup:${NC}"
+        echo "   Add to ~/.bashrc:"
+        echo "   export ANDROID_HOME=\"$SDK_ROOT\""
+        echo "   export PATH=\"\$ANDROID_HOME/cmdline-tools/latest/bin:\$PATH\""
+        echo ""
+        
+        return 0
+    else
+        echo -e "${RED}✗${NC} Failed to install Android SDK"
         return 1
     fi
 }
@@ -358,6 +466,15 @@ verify_installation() {
         ((FAIL++))
     fi
 
+    # Check Android SDK
+    SDK_ROOT="$PROJECT_DIR/android-sdk"
+    if [ -f "$SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" ]; then
+        echo -e "${GREEN}✓${NC} Android SDK installed"
+        ((PASS++))
+    else
+        echo -e "${YELLOW}⚠${NC} Android SDK not installed (using Termux tools only)"
+    fi
+
     echo ""
     echo "══════════════════════════════════════"
     echo -e "${GREEN}Verified: $PASS${NC}"
@@ -397,9 +514,11 @@ interactive_prompt() {
     echo "  [2] Core only (Java, Git, ADB, wget, curl, unzip)"
     echo "  [3] Core + Signing tools (for release builds)"
     echo "  [4] Core + Optional tools (for dev mode)"
-    echo "  [5] Custom selection"
+    echo "  [5] Core + Android SDK (full development setup)"
+    echo "  [6] Android SDK only"
+    echo "  [7] Custom selection"
     echo ""
-    read -p "Enter choice (1-5): " choice
+    read -p "Enter choice (1-7): " choice
 
     case $choice in
         1)
@@ -407,26 +526,44 @@ interactive_prompt() {
             INSTALL_SIGNING=true
             INSTALL_OPTIONAL=true
             INSTALL_AAB=true
+            INSTALL_SDK=true
             ;;
         2)
             INSTALL_CORE=true
             INSTALL_SIGNING=false
             INSTALL_OPTIONAL=false
             INSTALL_AAB=false
+            INSTALL_SDK=false
             ;;
         3)
             INSTALL_CORE=true
             INSTALL_SIGNING=true
             INSTALL_OPTIONAL=false
             INSTALL_AAB=false
+            INSTALL_SDK=false
             ;;
         4)
             INSTALL_CORE=true
             INSTALL_SIGNING=false
             INSTALL_OPTIONAL=true
             INSTALL_AAB=false
+            INSTALL_SDK=false
             ;;
         5)
+            INSTALL_CORE=true
+            INSTALL_SIGNING=true
+            INSTALL_OPTIONAL=false
+            INSTALL_AAB=false
+            INSTALL_SDK=true
+            ;;
+        6)
+            INSTALL_CORE=false
+            INSTALL_SIGNING=false
+            INSTALL_OPTIONAL=false
+            INSTALL_AAB=false
+            INSTALL_SDK=true
+            ;;
+        7)
             echo ""
             echo "Select individual components:"
             read -p "  Install Core dependencies? (y/n): " core_choice
@@ -440,6 +577,9 @@ interactive_prompt() {
 
             read -p "  Install AAB tools (bundletool)? (y/n): " aab_choice
             [[ "$aab_choice" =~ ^[Yy]$ ]] && INSTALL_AAB=true || INSTALL_AAB=false
+
+            read -p "  Install Android SDK? (y/n): " sdk_choice
+            [[ "$sdk_choice" =~ ^[Yy]$ ]] && INSTALL_SDK=true || INSTALL_SDK=false
             ;;
         *)
             echo -e "${RED}❌ Invalid choice${NC}"
@@ -468,6 +608,10 @@ fi
 
 if [ "$INSTALL_AAB" = true ]; then
     install_aab
+fi
+
+if [ "$INSTALL_SDK" = true ]; then
+    install_android_sdk
 fi
 
 # Verify

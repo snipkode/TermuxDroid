@@ -20,6 +20,13 @@ echo -e "${BLUE}║  TermuxDroid Environment Checklist    ║${NC}"
 echo -e "${BLUE}╚════════════════════════════════════════╝${NC}"
 echo ""
 
+# Setup environment variables
+SDK_ROOT="$PROJECT_DIR/android-sdk"
+if [ -d "$SDK_ROOT" ]; then
+    export ANDROID_HOME="$SDK_ROOT"
+    export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
+fi
+
 PASS=0
 FAIL=0
 WARN=0
@@ -211,6 +218,69 @@ if command -v apksigner &> /dev/null; then
 else
     echo -e "${YELLOW}⚠${NC} apksigner NOT FOUND"
     echo -e "   Install Android SDK build-tools for apksigner"
+    ((WARN++))
+fi
+
+# Check Android SDK
+echo ""
+echo -e "${YELLOW}📋 Checking Android SDK Environment${NC}"
+echo "─────────────────────────────────────"
+
+if [ -n "$ANDROID_HOME" ]; then
+    echo -e "${GREEN}✓${NC} ANDROID_HOME is set: $ANDROID_HOME"
+    ((PASS++))
+else
+    echo -e "${YELLOW}⚠${NC} ANDROID_HOME not set"
+    echo -e "   ${BLUE}Run: ./scripts/setup-env.sh${NC}"
+    ((WARN++))
+fi
+
+if [ -d "$PROJECT_DIR/android-sdk" ]; then
+    echo -e "${GREEN}✓${NC} Android SDK directory exists"
+    ((PASS++))
+    
+    # Check sdkmanager
+    if [ -f "$PROJECT_DIR/android-sdk/cmdline-tools/latest/bin/sdkmanager" ]; then
+        echo -e "${GREEN}✓${NC} sdkmanager found"
+        ((PASS++))
+    else
+        echo -e "${YELLOW}⚠${NC} sdkmanager not found"
+        echo -e "   ${BLUE}Install: ./scripts/install-deps.sh --sdk${NC}"
+        ((WARN++))
+    fi
+    
+    # Check build-tools
+    if [ -d "$PROJECT_DIR/android-sdk/build-tools" ]; then
+        BUILD_TOOLS=$(ls "$PROJECT_DIR/android-sdk/build-tools" 2>/dev/null | head -1)
+        if [ -n "$BUILD_TOOLS" ]; then
+            echo -e "${GREEN}✓${NC} build-tools installed: $BUILD_TOOLS"
+            ((PASS++))
+        else
+            echo -e "${YELLOW}⚠${NC} build-tools not installed"
+            ((WARN++))
+        fi
+    else
+        echo -e "${YELLOW}⚠${NC} build-tools directory not found"
+        ((WARN++))
+    fi
+    
+    # Check platforms
+    if [ -d "$PROJECT_DIR/android-sdk/platforms" ]; then
+        PLATFORM=$(ls "$PROJECT_DIR/android-sdk/platforms" 2>/dev/null | head -1)
+        if [ -n "$PLATFORM" ]; then
+            echo -e "${GREEN}✓${NC} platform installed: $PLATFORM"
+            ((PASS++))
+        else
+            echo -e "${YELLOW}⚠${NC} no platform installed"
+            ((WARN++))
+        fi
+    else
+        echo -e "${YELLOW}⚠${NC} platforms directory not found"
+        ((WARN++))
+    fi
+else
+    echo -e "${YELLOW}⚠${NC} Android SDK not installed"
+    echo -e "   ${BLUE}Install: ./scripts/install-deps.sh --sdk${NC}"
     ((WARN++))
 fi
 
