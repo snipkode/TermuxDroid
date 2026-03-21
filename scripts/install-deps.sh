@@ -38,6 +38,7 @@ INSTALL_SIGNING=true
 INSTALL_OPTIONAL=true
 INSTALL_AAB=true
 INSTALL_SDK=false
+SDK_VERSION="31"
 FORCE_REINSTALL=false
 SHOW_HELP=false
 SKIP_INTERACTIVE=false
@@ -80,6 +81,10 @@ while [[ $# -gt 0 ]]; do
             INSTALL_SDK=true
             shift
             ;;
+        --sdk-version=*)
+            SDK_VERSION="${1#*=}"
+            shift
+            ;;
         --all)
             INSTALL_CORE=true
             INSTALL_SIGNING=true
@@ -112,21 +117,23 @@ if [ "$SHOW_HELP" = true ]; then
     echo "Usage: $0 [options]"
     echo ""
     echo "Options:"
-    echo "  --core       Install only core dependencies (Java, Git, ADB)"
-    echo "  --signing    Install only signing tools (apksigner, zipalign)"
-    echo "  --optional   Install only optional tools (inotify-tools, procps-ng)"
-    echo "  --aab        Install only AAB tools (bundletool)"
-    echo "  --sdk        Install Android SDK (commandlinetools from Google)"
-    echo "  --all        Install all dependencies (default)"
-    echo "  --force      Force reinstall all packages"
-    echo "  --yes, -y    Skip interactive prompts (auto-confirm)"
-    echo "  --help, -h   Show this help message"
+    echo "  --core              Install only core dependencies (Java, Git, ADB)"
+    echo "  --signing           Install only signing tools (apksigner, zipalign)"
+    echo "  --optional          Install only optional tools (inotify-tools, procps-ng)"
+    echo "  --aab               Install only AAB tools (bundletool)"
+    echo "  --sdk               Install Android SDK (commandlinetools from Google)"
+    echo "  --sdk-version=VER   Set Android SDK version (default: 31)"
+    echo "  --all               Install all dependencies (default)"
+    echo "  --force             Force reinstall all packages"
+    echo "  --yes, -y           Skip interactive prompts (auto-confirm)"
+    echo "  --help, -h          Show this help message"
     echo ""
     echo "Examples:"
-    echo "  $0              # Install all dependencies"
-    echo "  $0 --core       # Install only core dependencies"
-    echo "  $0 --sdk        # Install Android SDK only"
-    echo "  $0 --all -y     # Install all without prompts"
+    echo "  $0                        # Install all dependencies (SDK 31)"
+    echo "  $0 --core                 # Install only core dependencies"
+    echo "  $0 --sdk                  # Install Android SDK only"
+    echo "  $0 --sdk --sdk-version=34 # Install SDK version 34"
+    echo "  $0 --all -y               # Install all without prompts"
     exit 0
 fi
 
@@ -240,6 +247,7 @@ install_android_sdk() {
     fi
 
     echo -e "${YELLOW}📦 Installing: Android SDK Command-line Tools${NC}"
+    echo "   SDK Version: $SDK_VERSION"
 
     # Create SDK directory
     mkdir -p "$SDK_ROOT"
@@ -288,12 +296,12 @@ install_android_sdk() {
         
         # Install essential packages
         echo -e "${BLUE}   Installing essential packages...${NC}"
-        echo "   - build-tools;34.0.0"
-        echo "   - platforms;android-34"
+        echo "   - build-tools;$SDK_VERSION.0.0"
+        echo "   - platforms;android-$SDK_VERSION"
         echo "   - platform-tools (uses Termux ADB, skipped)"
         
         # Install build-tools and platform (skip platform-tools since we use Termux adb)
-        "$LATEST_DIR/bin/sdkmanager" "build-tools;34.0.0" "platforms;android-34" 2>/dev/null
+        "$LATEST_DIR/bin/sdkmanager" "build-tools;$SDK_VERSION.0.0" "platforms;android-$SDK_VERSION" 2>/dev/null
         
         echo ""
         echo -e "${GREEN}✓${NC} SDK packages installed"
