@@ -290,9 +290,20 @@ install_android_sdk() {
         echo "   Location: $SDK_ROOT"
         echo ""
         
-        # Accept licenses automatically
-        echo -e "${BLUE}   Accepting SDK licenses...${NC}"
-        yes | "$LATEST_DIR/bin/sdkmanager" --licenses > /dev/null 2>&1 || true
+        # Setup environment for sdkmanager
+        export ANDROID_HOME="$SDK_ROOT"
+        export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
+        
+        # Accept ALL licenses automatically (non-interactive)
+        echo -e "${BLUE}   Accepting ALL SDK licenses...${NC}"
+        yes | "$LATEST_DIR/bin/sdkmanager" --licenses >/dev/null 2>&1
+        
+        # Verify licenses accepted
+        if [ -d "$SDK_ROOT/licenses" ] && [ -f "$SDK_ROOT/licenses/android-sdk-license" ]; then
+            echo -e "${GREEN}✓${NC} Licenses accepted"
+        else
+            echo -e "${YELLOW}⚠${NC} License acceptance may have failed"
+        fi
         
         # Install essential packages
         echo -e "${BLUE}   Installing essential packages...${NC}"
@@ -301,7 +312,7 @@ install_android_sdk() {
         echo "   - platform-tools (uses Termux ADB, skipped)"
         
         # Install build-tools and platform (skip platform-tools since we use Termux adb)
-        "$LATEST_DIR/bin/sdkmanager" "build-tools;$SDK_VERSION.0.0" "platforms;android-$SDK_VERSION" 2>/dev/null
+        "$LATEST_DIR/bin/sdkmanager" "build-tools;$SDK_VERSION.0.0" "platforms;android-$SDK_VERSION" 2>&1 | grep -E "(Installed|updated|Failed)" || true
         
         echo ""
         echo -e "${GREEN}✓${NC} SDK packages installed"
