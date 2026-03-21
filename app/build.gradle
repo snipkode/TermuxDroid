@@ -32,9 +32,9 @@ android {
         release {
             // Will be configured via gradle.properties or command line
             storeFile rootProject.file("keystore/release.keystore")
-            storePassword System.getenv('KEYSTORE_PASSWORD') ?: keystoreProperties['storePassword'] ?: ''
+            storePassword System.getenv('KEYSTORE_PASSWORD') ?: System.getenv('KEYSTORE_PASS') ?: keystoreProperties['storePassword'] ?: ''
             keyAlias System.getenv('KEY_ALIAS') ?: keystoreProperties['keyAlias'] ?: ''
-            keyPassword System.getenv('KEY_PASSWORD') ?: keystoreProperties['keyPassword'] ?: ''
+            keyPassword System.getenv('KEY_PASSWORD') ?: System.getenv('KEY_ALIAS_PASS') ?: keystoreProperties['keyPassword'] ?: ''
         }
     }
 

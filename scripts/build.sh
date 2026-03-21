@@ -146,6 +146,8 @@ check_signing() {
 
 # Function to get keystore password
 get_keystore_password() {
+    local prompt_message="$1"
+    
     if [ -f "$KEYSTORE_PROPS" ]; then
         # Try to read from properties file (if user stored it there)
         local stored_pass=$(grep -E "^storePassword=" "$KEYSTORE_PROPS" 2>/dev/null | cut -d'=' -f2)
@@ -155,11 +157,36 @@ get_keystore_password() {
         fi
     fi
 
-    # Prompt for password
-    echo "Enter keystore password:"
-    read -s -p "  > " STORE_PASS
+    # Prompt for password with clear message
     echo ""
-    echo "$STORE_PASS"
+    echo -e "${YELLOW}🔐 $prompt_message${NC}"
+    echo "   Keystore: $KEYSTORE_FILE"
+    echo ""
+    
+    # Try multiple times to avoid typos
+    local max_attempts=3
+    local attempt=1
+    
+    while [ $attempt -le $max_attempts ]; do
+        echo "Enter keystore password (attempt $attempt of $max_attempts):"
+        read -s -p "  > " STORE_PASS
+        echo ""
+        
+        # Confirm password
+        read -s -p "  > Confirm: " STORE_PASS_CONFIRM
+        echo ""
+        
+        if [ "$STORE_PASS" = "$STORE_PASS_CONFIRM" ]; then
+            echo "$STORE_PASS"
+            return
+        else
+            echo -e "${RED}❌ Passwords do not match!${NC}"
+            attempt=$((attempt + 1))
+        fi
+    done
+    
+    echo -e "${RED}❌ Too many failed attempts!${NC}"
+    return 1
 }
 
 # Function to select device by index
@@ -224,20 +251,31 @@ if [ "$BUILD_TYPE" = "release" ]; then
         echo ""
         echo -e "${GREEN}✅ Signing configured!${NC}"
 
-        # Get password once and export for Gradle
-        STORE_PASS=$(get_keystore_password)
-        export KEYSTORE_PASSWORD="$STORE_PASS"
+        # Get password with confirmation
+        STORE_PASS=$(get_keystore_password "Keystore Password Required for Signing")
+        
+        if [ -z "$STORE_PASS" ] || [ "$STORE_PASS" = "1" ]; then
+            echo -e "${RED}❌ Failed to get valid password!${NC}"
+            echo ""
+            echo -e "${YELLOW}⚠️  Building UNSIGNED release (for testing only)${NC}"
+        else
+            # Export for Gradle
+            export KEYSTORE_PASSWORD="$STORE_PASS"
+            export KEYSTORE_PASS="$STORE_PASS"
 
-        # Try to get key alias from properties
-        if [ -f "$KEYSTORE_PROPS" ]; then
-            KEY_ALIAS=$(grep -E "^keyAlias=" "$KEYSTORE_PROPS" 2>/dev/null | cut -d'=' -f2)
-            if [ -n "$KEY_ALIAS" ]; then
-                export KEY_ALIAS="$KEY_ALIAS"
-                echo -e "${GREEN}✓${NC} Using alias: $KEY_ALIAS"
+            # Try to get key alias from properties
+            if [ -f "$KEYSTORE_PROPS" ]; then
+                KEY_ALIAS=$(grep -E "^keyAlias=" "$KEYSTORE_PROPS" 2>/dev/null | cut -d'=' -f2)
+                if [ -n "$KEY_ALIAS" ]; then
+                    export KEY_ALIAS="$KEY_ALIAS"
+                    export KEY_ALIAS_PASS="$STORE_PASS"
+                    echo -e "${GREEN}✓${NC} Using alias: $KEY_ALIAS"
+                fi
             fi
-        fi
 
-        echo ""
+            echo ""
+            echo -e "${GREEN}✅ Password configured for signing!${NC}"
+        fi
     else
         echo ""
         echo -e "${YELLOW}⚠️  Building UNSIGNED release (for testing only)${NC}"
