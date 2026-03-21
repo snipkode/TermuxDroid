@@ -12,7 +12,9 @@
     "keystore": "node bin/orchestrator.js keystore",
     "run": "node bin/orchestrator.js",
     "clean": "node bin/orchestrator.js clean",
-    "install": "node bin/orchestrator.js install"
+    "install": "node bin/orchestrator.js install",
+    "install-deps": "./scripts/install-deps.sh --all -y",
+    "setup-env": "./scripts/setup-env.sh"
   },
   "keywords": ["orchestrator", "termux", "android"],
   "license": "MIT"
