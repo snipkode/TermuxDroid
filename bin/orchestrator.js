@@ -22,8 +22,12 @@ const COMMANDS = {
     description: 'Run development mode',
   },
   build: {
-    script: './build.sh',
-    description: 'Build the project',
+    script: './build.sh --debug',
+    description: 'Build debug APK',
+  },
+  'build:release': {
+    script: './build.sh --release',
+    description: 'Build release APK',
   },
   doctor: {
     script: './setup-check.sh',

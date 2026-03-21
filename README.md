@@ -82,6 +82,7 @@ Quick commands via NPM:
 |---------|-------------|
 | `npm run dev` | **Dev mode with auto-reload** |
 | `npm run build` | Build debug APK |
+| `npm run build:release` | Build release APK (unsigned) |
 | `npm run doctor` | Check environment setup |
 | `npm run clean` | Clean build artifacts |
 | `npm run install` | Install APK to device |
@@ -98,11 +99,13 @@ node bin/orchestrator.js dev
 
 | Command | Description |
 |---------|-------------|
-| `./setup-check.sh` | Check environment setup and prerequisites |
-| `./build.sh` | Build debug APK with device selection |
-| `./install-apk.sh` | Install APK to connected device |
-| `./run.sh` | Launch the app on device |
-| `./dev.sh` | **Dev mode with auto-reload** (hot reload-like) |
+| `./build.sh` | Build debug APK (default) |
+| `./build.sh --release` | Build release APK (unsigned) |
+| `./build.sh --debug` | Build debug APK |
+| `./setup-check.sh` | Check environment setup |
+| `./install-apk.sh` | Install APK to device |
+| `./run.sh` | Launch app on device |
+| `./dev.sh` | **Dev mode with auto-reload** |
 
 ### Gradle Commands
 

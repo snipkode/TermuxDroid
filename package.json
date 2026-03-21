@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "node bin/orchestrator.js dev",
     "build": "node bin/orchestrator.js build",
+    "build:release": "node bin/orchestrator.js build:release",
     "doctor": "node bin/orchestrator.js doctor",
     "run": "node bin/orchestrator.js",
     "clean": "node bin/orchestrator.js clean",
