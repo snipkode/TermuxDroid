@@ -49,6 +49,10 @@ const COMMANDS = {
     script: './scripts/install-apk.sh',
     description: 'Install APK to device',
   },
+  'install-deps': {
+    script: './scripts/install-deps.sh --all -y',
+    description: 'Install all dependencies',
+  },
 };
 
 function printHelp() {

@@ -257,13 +257,13 @@ if [ $FAIL -gt 0 ]; then
     echo "   pkg install openjdk-17 git android-tools inotify-tools apksigner"
     echo ""
     echo -e "${BLUE}Or use auto-installer:${NC}"
-    echo "   ./install-deps.sh --all -y"
+    echo "   ./scripts/install-deps.sh --all -y"
     exit 1
 elif [ $WARN -gt 0 ]; then
     echo -e "${GREEN}✅ Setup complete! (optional items missing)${NC}"
     echo ""
     echo -e "${YELLOW}Recommended:${NC} Install optional tools for better experience"
-    echo "   ./install-deps.sh --all -y"
+    echo "   ./scripts/install-deps.sh --all -y"
     echo "   # Or: pkg install inotify-tools procps-ng apksigner"
 else
     echo -e "${GREEN}✅ All checks passed! Ready to develop!${NC}"

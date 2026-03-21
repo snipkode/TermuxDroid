@@ -13,6 +13,7 @@
     "run": "node bin/orchestrator.js",
     "clean": "node bin/orchestrator.js clean",
     "install": "node bin/orchestrator.js install",
+    "install-deps": "./scripts/install-deps.sh --all -y",
     
     "gui": "node bin/gui-builder.js",
     "gui:dev": "concurrently \"npm run gui:backend\" \"npm run gui:frontend\"",
