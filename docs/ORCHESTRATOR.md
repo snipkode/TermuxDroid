@@ -16,11 +16,11 @@ npm run <command>
 
 | Command | Deskripsi | Script |
 |---------|-----------|--------|
-| `npm run dev` | Run development mode | `./dev.sh` |
-| `npm run build` | Build project | `./build.sh` |
-| `npm run doctor` | Check environment | `./setup-check.sh` |
+| `npm run dev` | Run development mode | `./scripts/dev.sh` |
+| `npm run build` | Build project | `./scripts/build.sh` |
+| `npm run doctor` | Check environment | `./scripts/setup-check.sh` |
 | `npm run clean` | Clean build | `./gradlew clean` |
-| `npm run install` | Install APK | `./install-apk.sh` |
+| `npm run install` | Install APK | `./scripts/install-apk.sh` |
 
 ## Usage
 

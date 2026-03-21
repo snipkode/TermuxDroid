@@ -18,27 +18,27 @@ const PROJECT_ROOT = dirname(__dirname);
 // Available commands
 const COMMANDS = {
   dev: {
-    script: './dev.sh',
+    script: './scripts/dev.sh',
     description: 'Run development mode',
   },
   build: {
-    script: './build.sh --debug',
+    script: './scripts/build.sh --debug',
     description: 'Build debug APK',
   },
   'build:release': {
-    script: './build.sh --release',
+    script: './scripts/build.sh --release',
     description: 'Build release APK (auto-sign if keystore exists)',
   },
   'build:aab': {
-    script: './build.sh --aab',
+    script: './scripts/build.sh --aab',
     description: 'Build AAB for Play Store (auto-sign if keystore exists)',
   },
   doctor: {
-    script: './setup-check.sh',
+    script: './scripts/setup-check.sh',
     description: 'Check environment setup',
   },
   keystore: {
-    script: './keystore.sh',
+    script: './scripts/keystore.sh',
     description: 'Create/manage signing keystore',
   },
   clean: {
@@ -46,7 +46,7 @@ const COMMANDS = {
     description: 'Clean build artifacts',
   },
   install: {
-    script: './install-apk.sh',
+    script: './scripts/install-apk.sh',
     description: 'Install APK to device',
   },
 };
@@ -61,12 +61,13 @@ Usage:
 
 Available commands:
 ${Object.entries(COMMANDS)
-  .map(([name, cmd]) => `  ${name.padEnd(10)} - ${cmd.description}`)
+  .map(([name, cmd]) => `  ${name.padEnd(13)} - ${cmd.description}`)
   .join('\n')}
 
 Examples:
   npm run dev       - Start development mode
   npm run build     - Build the project
+  npm run setup     - Install all dependencies (first-time setup)
   npm run doctor    - Check environment
 `);
 }

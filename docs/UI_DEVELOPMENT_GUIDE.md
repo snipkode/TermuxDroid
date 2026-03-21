@@ -558,7 +558,7 @@ public class MainActivity extends AppCompatActivity {
 ### 1. Gunakan Dev Mode
 
 ```bash
-./dev.sh
+./scripts/dev.sh
 ```
 
 - Auto-rebuild saat file berubah
@@ -634,7 +634,7 @@ protected void onCreate(Bundle savedInstanceState) {
 
 2. Build & run:
 ```bash
-./build.sh && ./install-apk.sh
+./scripts/build.sh && ./scripts/install-apk.sh
 ```
 
 ### Menambah Button Baru
@@ -693,16 +693,16 @@ btnNew.setOnClickListener(v -> {
 
 ```bash
 # Build APK
-./build.sh
+./scripts/build.sh
 
 # Install ke device
-./install-apk.sh
+./scripts/install-apk.sh
 
 # Run app
-./run.sh
+./scripts/run.sh
 
 # Dev mode (auto-reload)
-./dev.sh
+./scripts/dev.sh
 
 # Clean build
 ./gradlew clean

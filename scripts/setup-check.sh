@@ -149,6 +149,39 @@ echo "────────────────────────�
 check_warn "inotifywait" "inotifywait (auto-reload watcher)" "pkg install inotify-tools"
 check_warn "watch" "watch command" "pkg install procps-ng"
 
+# Check APK Signing & Analysis Tools
+echo ""
+echo -e "${YELLOW}📋 Checking APK Signing & Analysis Tools${NC}"
+echo "─────────────────────────────────────"
+
+if command -v apksigner &> /dev/null; then
+    echo -e "${GREEN}✓${NC} apksigner (Android APK signer)"
+    ((PASS++))
+else
+    echo -e "${YELLOW}⚠${NC} apksigner NOT FOUND"
+    echo -e "   ${BLUE}Install: pkg install apksigner${NC}"
+    ((WARN++))
+fi
+
+if command -v zipalign &> /dev/null; then
+    echo -e "${GREEN}✓${NC} zipalign (APK alignment optimizer)"
+    ((PASS++))
+else
+    echo -e "${YELLOW}⚠${NC} zipalign NOT FOUND"
+    echo -e "   ${BLUE}Install: See rendiix/termux-zipalign${NC}"
+    ((WARN++))
+fi
+
+# Check bundletool
+if [ -f "$PROJECT_DIR/bin/bundletool.jar" ] || command -v bundletool &> /dev/null; then
+    echo -e "${GREEN}✓${NC} bundletool (AAB to APK converter)"
+    ((PASS++))
+else
+    echo -e "${YELLOW}⚠${NC} bundletool NOT FOUND"
+    echo -e "   ${BLUE}Install: Auto-downloaded with --aab flag${NC}"
+    ((WARN++))
+fi
+
 # Check Signing Tools
 echo ""
 echo -e "${YELLOW}📋 Checking Signing Tools (For Release Builds)${NC}"
@@ -221,13 +254,17 @@ if [ $FAIL -gt 0 ]; then
     echo ""
     echo -e "${BLUE}Quick install all requirements:${NC}"
     echo "   pkg update && pkg upgrade"
-    echo "   pkg install openjdk-17 git android-tools inotify-tools"
+    echo "   pkg install openjdk-17 git android-tools inotify-tools apksigner"
+    echo ""
+    echo -e "${BLUE}Or use auto-installer:${NC}"
+    echo "   ./install-deps.sh --all -y"
     exit 1
 elif [ $WARN -gt 0 ]; then
     echo -e "${GREEN}✅ Setup complete! (optional items missing)${NC}"
     echo ""
     echo -e "${YELLOW}Recommended:${NC} Install optional tools for better experience"
-    echo "   pkg install inotify-tools procps-ng"
+    echo "   ./install-deps.sh --all -y"
+    echo "   # Or: pkg install inotify-tools procps-ng apksigner"
 else
     echo -e "${GREEN}✅ All checks passed! Ready to develop!${NC}"
 fi

@@ -101,13 +101,13 @@ node bin/orchestrator.js dev
 
 | Command | Description |
 |---------|-------------|
-| `./build.sh` | Build debug APK (default) |
-| `./build.sh --release` | Build release APK (unsigned) |
-| `./build.sh --aab` | Build AAB (for Google Play) |
-| `./setup-check.sh` | Check environment setup |
-| `./install-apk.sh` | Install APK to device |
-| `./run.sh` | Launch app on device |
-| `./dev.sh` | **Dev mode with auto-reload** |
+| `./scripts/build.sh` | Build debug APK (default) |
+| `./scripts/build.sh --release` | Build release APK (unsigned) |
+| `./scripts/build.sh --aab` | Build AAB (for Google Play) |
+| `./scripts/setup-check.sh` | Check environment setup |
+| `./scripts/install-apk.sh` | Install APK to device |
+| `./scripts/run.sh` | Launch app on device |
+| `./scripts/dev.sh` | **Dev mode with auto-reload** |
 
 ### Gradle Commands
 
@@ -119,10 +119,11 @@ node bin/orchestrator.js dev
 
 ### Direct Script Access
 
-Scripts are located in `scripts/` folder. You can run them directly:
+All scripts are in the `scripts/` folder:
 ```bash
-./scripts/dev.sh      # Same as ./dev.sh
-./scripts/build.sh    # Same as ./build.sh
+./scripts/build.sh      # Build APK
+./scripts/dev.sh        # Dev mode with auto-reload
+./scripts/install-apk.sh
 ```
 
 ---
@@ -189,7 +190,7 @@ For faster development with **hot reload-like** experience:
 ### Start Dev Mode
 
 ```bash
-./dev.sh
+./scripts/dev.sh
 ```
 
 This will:
@@ -241,20 +242,16 @@ TermuxDroid/
 │   ├── install-apk.sh   # Install APK to device
 │   ├── run.sh           # Launch app
 │   ├── dev.sh           # Dev mode with auto-reload
+│   ├── keystore.sh      # Create/manage signing keystore
 │   └── setup-check.sh   # Environment checklist
-├── docs/                # Additional documentation
-├── build.sh             # Wrapper (runs scripts/build.sh)
-├── run.sh               # Wrapper (runs scripts/run.sh)
-├── dev.sh               # Wrapper (runs scripts/dev.sh)
-├── install-apk.sh       # Wrapper (runs scripts/install-apk.sh)
-├── setup-check.sh       # Wrapper (runs scripts/setup-check.sh)
+├── docs/                # Documentation
+│   ├── ORCHESTRATOR.md
+│   ├── TOOLS_REFERENCE.md
+│   └── UI_DEVELOPMENT_GUIDE.md
 ├── package.json         # NPM scripts configuration
 ├── build.gradle
 └── README.md
 ```
-
-**Note:** Wrapper scripts in root directory call scripts in `scripts/` folder.
-You can use either `./dev.sh` or `./scripts/dev.sh` - both work the same!
 
 ---
 

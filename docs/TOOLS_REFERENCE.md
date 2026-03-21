@@ -85,7 +85,6 @@ These are automatically downloaded by Gradle during first build.
 | **Doctor** | `scripts/setup-check.sh` | Environment health check | `npm run doctor` |
 | **Install APK** | `scripts/install-apk.sh` | Install APK to device | `npm run install` |
 | **Run App** | `scripts/run.sh` | Launch app on device | - |
-| **Setup Check** | `scripts/setup-check.sh` | Verify all prerequisites | `npm run doctor` |
 
 ---
 
@@ -146,12 +145,14 @@ npm run keystore
 ```
 TermuxDroid/
 ├── bin/
-│   └── orchestrator.js        # Node.js command runner (requires Node.js 14+)
+│   └── orchestrator.js        # Node.js command runner
 ├── scripts/
 │   ├── build.sh              # Build script (requires: bash, gradle, java)
 │   ├── dev.sh                # Dev mode (requires: inotifywait - optional)
 │   ├── keystore.sh           # Keystore management (requires: keytool, jarsigner)
-│   └── setup-check.sh        # Environment check (requires: bash, adb)
+│   ├── setup-check.sh        # Environment check (requires: bash, adb)
+│   ├── install-apk.sh        # Install APK to device
+│   └── run.sh                # Launch app on device
 ├── app/
 │   ├── build.gradle          # App dependencies (auto-downloaded by Gradle)
 │   └── src/                  # Source code
@@ -159,6 +160,10 @@ TermuxDroid/
 │   └── wrapper/              # Gradle wrapper (auto-downloads Gradle)
 ├── keystore/
 │   └── release.keystore      # Signing key (created by user)
+├── docs/                     # Documentation
+│   ├── ORCHESTRATOR.md
+│   ├── TOOLS_REFERENCE.md
+│   └── UI_DEVELOPMENT_GUIDE.md
 ├── package.json              # NPM scripts configuration
 └── build.gradle              # Project dependencies
 ```
@@ -184,8 +189,9 @@ TermuxDroid/
 ## 📞 Support & Documentation
 
 - **Main Docs**: `README.md`
-- **Orchestrator**: `ORCHESTRATOR.md`
-- **Signing Guide**: See `README.md` - Signing section
+- **Orchestrator**: `docs/ORCHESTRATOR.md`
+- **Tools Reference**: `docs/TOOLS_REFERENCE.md`
+- **UI Guide**: `docs/UI_DEVELOPMENT_GUIDE.md`
 - **Environment Check**: `npm run doctor`
 
 ---
