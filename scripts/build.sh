@@ -112,19 +112,8 @@ check_signing() {
 
     if [ ! -f "$KEYSTORE_FILE" ]; then
         echo -e "${YELLOW}⚠${NC} Keystore not found: $KEYSTORE_FILE"
-        echo ""
-        echo "Create keystore now for signed release builds?"
-        read -p "(y/n): " create_ks
-        if [[ "$create_ks" =~ ^[Yy]$ ]]; then
-            ./scripts/keystore.sh --create
-            if [ $? -ne 0 ]; then
-                echo -e "${RED}❌ Failed to create keystore${NC}"
-                return 1
-            fi
-        else
-            echo -e "${YELLOW}⚠${NC} Build will continue without signing"
-            return 1
-        fi
+        echo -e "${YELLOW}⚠${NC} Using debug keystore from build.gradle (for development only)"
+        return 1
     fi
 
     # Check if keytool is available
@@ -262,7 +251,7 @@ if [ "$BUILD_TYPE" = "release" ]; then
 
         # Get password with confirmation
         STORE_PASS=$(get_keystore_password "Keystore Password Required for Signing")
-        
+
         if [ -z "$STORE_PASS" ] || [ "$STORE_PASS" = "1" ]; then
             echo -e "${RED}❌ Failed to get valid password!${NC}"
             echo ""
@@ -287,8 +276,8 @@ if [ "$BUILD_TYPE" = "release" ]; then
         fi
     else
         echo ""
-        echo -e "${YELLOW}⚠️  Building UNSIGNED release (for testing only)${NC}"
-        echo "   For Play Store upload, create keystore first!"
+        echo -e "${YELLOW}⚠️  Using debug keystore (build.gradle handles signing)${NC}"
+        echo "   For production, create release keystore first!"
         echo ""
     fi
 fi
