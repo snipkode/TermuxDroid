@@ -1,0 +1,21 @@
+{
+  "name": "gui-builder-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "GUI Builder Backend - Edit TermuxDroid projects visually",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js"
+  },
+  "keywords": ["gui-builder", "termuxdroid", "android"],
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "xml2js": "^0.6.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
