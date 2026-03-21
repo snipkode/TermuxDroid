@@ -53,6 +53,10 @@ const COMMANDS = {
     script: './scripts/install-deps.sh --all -y',
     description: 'Install all dependencies',
   },
+  'setup-env': {
+    script: './scripts/setup-env.sh',
+    description: 'Setup environment variables (ANDROID_HOME, PATH)',
+  },
 };
 
 function printHelp() {

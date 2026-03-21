@@ -14,6 +14,7 @@
     "clean": "node bin/orchestrator.js clean",
     "install": "node bin/orchestrator.js install",
     "install-deps": "./scripts/install-deps.sh --all -y",
+    "setup-env": "./scripts/setup-env.sh",
     
     "gui": "node bin/gui-builder.js",
     "gui:dev": "concurrently \"npm run gui:backend\" \"npm run gui:frontend\"",

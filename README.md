@@ -55,12 +55,15 @@ npm run install
 Before you start, verify your setup:
 
 ```bash
-./setup-check.sh
+./scripts/setup-check.sh
+# or
+npm run doctor
 ```
 
 This will check:
 - Java installation
 - ADB and Android tools
+- Android SDK (optional, for advanced features)
 - Project structure
 - Device connection
 - Optional tools (inotifywait for auto-reload)
@@ -68,6 +71,20 @@ This will check:
 **Quick install all requirements:**
 ```bash
 pkg install openjdk-17 git android-tools inotify-tools
+```
+
+**Full setup with Android SDK from Google:**
+```bash
+npm run install-deps
+# or
+./scripts/install-deps.sh --all -y
+```
+
+**Setup environment variables:**
+```bash
+npm run setup-env
+# or
+./scripts/setup-env.sh
 ```
 
 ---
@@ -88,6 +105,8 @@ Quick commands via NPM:
 | `npm run keystore` | Create/manage signing keystore |
 | `npm run clean` | Clean build artifacts |
 | `npm run install` | Install APK to device |
+| `npm run install-deps` | **Install all dependencies** (Java, SDK, tools) |
+| `npm run setup-env` | **Setup environment variables** (ANDROID_HOME, PATH) |
 
 ```bash
 # See all commands
@@ -105,6 +124,8 @@ node bin/orchestrator.js dev
 | `./scripts/build.sh --release` | Build release APK (unsigned) |
 | `./scripts/build.sh --aab` | Build AAB (for Google Play) |
 | `./scripts/setup-check.sh` | Check environment setup |
+| `./scripts/install-deps.sh` | **Install all dependencies** |
+| `./scripts/setup-env.sh` | **Setup environment variables** |
 | `./scripts/install-apk.sh` | Install APK to device |
 | `./scripts/run.sh` | Launch app on device |
 | `./scripts/dev.sh` | **Dev mode with auto-reload** |
