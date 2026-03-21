@@ -22,8 +22,8 @@ const COMMANDS = {
     description: 'Run development mode',
   },
   build: {
-    script: './scripts/build.sh --debug',
-    description: 'Build debug APK',
+    script: './scripts/build.sh --debug --no-prompt',
+    description: 'Build debug APK (auto-install)',
   },
   'build:release': {
     script: './scripts/build.sh --release',

@@ -17,6 +17,7 @@ BUILD_TASK="assembleDebug"
 OUTPUT_PATH="app/build/outputs/apk/debug/app-debug.apk"
 OUTPUT_FORMAT="apk"
 SKIP_SIGNING=false
+NO_PROMPT=false
 
 # Colors
 GREEN='\033[0;32m'
@@ -60,6 +61,10 @@ while [[ $# -gt 0 ]]; do
             SKIP_SIGNING=true
             shift
             ;;
+        --no-prompt|-n)
+            NO_PROMPT=true
+            shift
+            ;;
         --help|-h)
             echo "Usage: $0 [options]"
             echo ""
@@ -69,6 +74,7 @@ while [[ $# -gt 0 ]]; do
             echo "  --aab, -a         Build release AAB (signed if keystore exists)"
             echo "  --release-aab, -ra  Same as --aab"
             echo "  --no-sign         Skip signing even if keystore exists"
+            echo "  --no-prompt, -n   Skip interactive prompts (auto-install)"
             echo "  --help, -h        Show this help"
             echo ""
             echo "Signing:"
@@ -296,8 +302,8 @@ if [ -f "$OUTPUT_PATH" ]; then
             fi
         fi
 
-        read -p "Install to device? (y/n): " install_choice
-        if [[ "$install_choice" =~ ^[Yy]$ ]]; then
+        if [ "$NO_PROMPT" = true ]; then
+            # Auto-install without prompting
             if select_device; then
                 echo ""
                 echo "📥 Installing on $SELECTED_DEVICE..."
@@ -312,7 +318,7 @@ if [ -f "$OUTPUT_PATH" ]; then
                 else
                     echo ""
                     echo "❌ Installation failed!"
-                    if [ "$BUILD_TYPE" = "release" ] && [ "$SKIP_SIGNING" = true ] || [ ! -f "$KEYSTORE_FILE" ]; then
+                    if [ "$BUILD_TYPE" = "release" ] && { [ "$SKIP_SIGNING" = true ] || [ ! -f "$KEYSTORE_FILE" ]; }; then
                         echo "   APK may be unsigned - some devices block unsigned apps"
                     fi
                     exit 1
@@ -321,6 +327,35 @@ if [ -f "$OUTPUT_PATH" ]; then
                 echo ""
                 echo "👉 Install manually:"
                 echo "   adb -s <device> install -r $OUTPUT_PATH"
+            fi
+        else
+            # Prompt user
+            read -p "Install to device? (y/n): " install_choice
+            if [[ "$install_choice" =~ ^[Yy]$ ]]; then
+                if select_device; then
+                    echo ""
+                    echo "📥 Installing on $SELECTED_DEVICE..."
+                    $ADB -s "$SELECTED_DEVICE" install -r "$OUTPUT_PATH"
+
+                    if [ $? -eq 0 ]; then
+                        echo ""
+                        echo "✅ Installation successful!"
+                        echo ""
+                        echo "👉 Launch app:"
+                        echo "   adb -s $SELECTED_DEVICE shell monkey -p com.myapp -c android.intent.category.LAUNCHER 1"
+                    else
+                        echo ""
+                        echo "❌ Installation failed!"
+                        if [ "$BUILD_TYPE" = "release" ] && { [ "$SKIP_SIGNING" = true ] || [ ! -f "$KEYSTORE_FILE" ]; }; then
+                            echo "   APK may be unsigned - some devices block unsigned apps"
+                        fi
+                        exit 1
+                    fi
+                else
+                    echo ""
+                    echo "👉 Install manually:"
+                    echo "   adb -s <device> install -r $OUTPUT_PATH"
+                fi
             fi
         fi
     fi
