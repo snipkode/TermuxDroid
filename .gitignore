@@ -17,3 +17,4 @@ keystore/*.properties
 
 # Debug keystore (auto-generated, not needed in git)
 app/debug.keystore
+android-sdk/

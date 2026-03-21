@@ -4,10 +4,18 @@
 
 set -e
 
-ADB="/data/data/com.termux/files/usr/bin/adb"
 # Get project root directory (parent of scripts/)
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$PROJECT_DIR"
+
+# Setup Android SDK environment
+SDK_ROOT="$PROJECT_DIR/android-sdk"
+if [ -d "$SDK_ROOT" ]; then
+    export ANDROID_HOME="$SDK_ROOT"
+    export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
+fi
+
+ADB="/data/data/com.termux/files/usr/bin/adb"
 
 APK_PATH="app/build/outputs/apk/debug/app-debug.apk"
 PACKAGE="com.myapp"
