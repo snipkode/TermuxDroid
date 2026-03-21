@@ -38,6 +38,12 @@ pkg install openjdk-17 git android-tools
 ```bash
 git clone https://github.com/snipkode/TermuxDroid.git
 cd TermuxDroid
+
+# Build and install
+npm run build
+npm run install
+
+# Or use shell scripts
 ./build.sh
 ./install-apk.sh
 ```
@@ -68,7 +74,27 @@ pkg install openjdk-17 git android-tools inotify-tools
 
 ## 🛠️ Available Commands
 
-### Main Scripts
+### Node.js Orchestrator (Recommended)
+
+Quick commands via NPM:
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | **Dev mode with auto-reload** |
+| `npm run build` | Build debug APK |
+| `npm run doctor` | Check environment setup |
+| `npm run clean` | Clean build artifacts |
+| `npm run install` | Install APK to device |
+
+```bash
+# See all commands
+npm run
+
+# Or use directly
+node bin/orchestrator.js dev
+```
+
+### Shell Scripts
 
 | Command | Description |
 |---------|-------------|
@@ -140,6 +166,8 @@ Press `Ctrl+C` to stop watching.
 
 ```
 TermuxDroid/
+├── bin/
+│   └── orchestrator.js    # Node.js command orchestrator
 ├── app/
 │   ├── src/main/
 │   │   ├── java/com/myapp/
@@ -154,11 +182,13 @@ TermuxDroid/
 │   ├── run.sh           # Launch app
 │   ├── dev.sh           # Dev mode with auto-reload
 │   └── setup-check.sh   # Environment checklist
+├── docs/                # Additional documentation
 ├── build.sh             # Wrapper (runs scripts/build.sh)
 ├── run.sh               # Wrapper (runs scripts/run.sh)
 ├── dev.sh               # Wrapper (runs scripts/dev.sh)
 ├── install-apk.sh       # Wrapper (runs scripts/install-apk.sh)
 ├── setup-check.sh       # Wrapper (runs scripts/setup-check.sh)
+├── package.json         # NPM scripts configuration
 ├── build.gradle
 └── README.md
 ```
