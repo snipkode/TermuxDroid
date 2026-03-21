@@ -148,19 +148,28 @@ check_signing() {
 get_keystore_password() {
     local prompt_message="$1"
     
+    # Priority 1: Try to read from properties file
     if [ -f "$KEYSTORE_PROPS" ]; then
-        # Try to read from properties file (if user stored it there)
         local stored_pass=$(grep -E "^storePassword=" "$KEYSTORE_PROPS" 2>/dev/null | cut -d'=' -f2)
         if [ -n "$stored_pass" ]; then
+            echo -e "${GREEN}✓${NC} Password loaded from keystore.properties"
             echo "$stored_pass"
-            return
+            return 0
         fi
     fi
 
-    # Prompt for password with clear message
+    # Priority 2: Try environment variable
+    if [ -n "$KEYSTORE_PASSWORD" ]; then
+        echo -e "${GREEN}✓${NC} Password loaded from environment"
+        echo "$KEYSTORE_PASSWORD"
+        return 0
+    fi
+
+    # Priority 3: Prompt for password with confirmation
     echo ""
     echo -e "${YELLOW}🔐 $prompt_message${NC}"
     echo "   Keystore: $KEYSTORE_FILE"
+    echo "   💡 Tip: Add 'storePassword=xxx' to keystore/keystore.properties to skip prompt"
     echo ""
     
     # Try multiple times to avoid typos
@@ -178,7 +187,7 @@ get_keystore_password() {
         
         if [ "$STORE_PASS" = "$STORE_PASS_CONFIRM" ]; then
             echo "$STORE_PASS"
-            return
+            return 0
         else
             echo -e "${RED}❌ Passwords do not match!${NC}"
             attempt=$((attempt + 1))

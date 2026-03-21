@@ -19,3 +19,4 @@ keystore/*.properties
 app/debug.keystore
 android-sdk/
 .temp/
+keystore/keystore.properties
