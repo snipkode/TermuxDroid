@@ -190,8 +190,11 @@ npm run build:aab
 ### Keystore Commands
 
 ```bash
-# Create new keystore
+# Create new keystore (interactive)
 ./scripts/keystore.sh --create
+
+# Create debug keystore (auto-generated)
+./scripts/keystore.sh --debug
 
 # View keystore info
 ./scripts/keystore.sh --info

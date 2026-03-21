@@ -279,6 +279,65 @@ sign_apk() {
     fi
 }
 
+# Function to create debug keystore automatically
+create_debug_keystore() {
+    echo -e "${BLUE}╔════════════════════════════════════════╗${NC}"
+    echo -e "${BLUE}║  Create Debug Keystore                ║${NC}"
+    echo -e "${BLUE}╚════════════════════════════════════════╝${NC}"
+    echo ""
+
+    DEBUG_KEYSTORE="$KEYSTORE_DIR/debug.keystore"
+
+    if [ -f "$DEBUG_KEYSTORE" ]; then
+        echo -e "${GREEN}✓${NC} Debug keystore already exists"
+        echo "   Location: $DEBUG_KEYSTORE"
+        echo ""
+        read -p "Regenerate debug keystore? (y/n): " regenerate
+        if [[ ! "$regenerate" =~ ^[Yy]$ ]]; then
+            return 0
+        fi
+    fi
+
+    # Create keystore directory
+    mkdir -p "$KEYSTORE_DIR"
+
+    echo -e "${YELLOW}📦 Generating debug keystore...${NC}"
+    echo "   Alias: androiddebugkey"
+    echo "   Password: android"
+    echo ""
+
+    # Generate debug keystore with default Android debug credentials
+    keytool -genkey -v \
+        -keystore "$DEBUG_KEYSTORE" \
+        -alias androiddebugkey \
+        -keyalg RSA \
+        -keysize 2048 \
+        -validity 10000 \
+        -storepass android \
+        -keypass android \
+        -dname "CN=Android, O=Android, L=Mountain View, S=California, C=US" \
+        2>&1 | tail -5
+
+    if [ $? -eq 0 ]; then
+        echo ""
+        echo -e "${GREEN}✅ Debug keystore created successfully!${NC}"
+        echo "   Location: $DEBUG_KEYSTORE"
+        echo ""
+        echo -e "${YELLOW}📌 Debug Keystore Info:${NC}"
+        echo "   Alias: androiddebugkey"
+        echo "   Store Password: android"
+        echo "   Key Password: android"
+        echo ""
+        echo -e "${BLUE}ℹ️  Note:${NC}"
+        echo "   Debug keystore is for development only!"
+        echo "   Use release.keystore for production builds."
+        echo ""
+    else
+        echo -e "${RED}❌ Failed to create debug keystore!${NC}"
+        return 1
+    fi
+}
+
 # Show help
 show_help() {
     echo "Keystore Management for TermuxDroid"
@@ -287,13 +346,15 @@ show_help() {
     echo ""
     echo "Commands:"
     echo "  --create, -c    Create new keystore"
+    echo "  --debug, -d     Create debug keystore (auto-generated)"
     echo "  --info, -i      View keystore information"
     echo "  --check, -t     Check signing tools availability"
     echo "  --sign, -s      Sign an APK manually"
     echo "  --help, -h      Show this help"
     echo ""
     echo "Examples:"
-    echo "  $0 --create     # Create new keystore"
+    echo "  $0 --create     # Create new keystore (interactive)"
+    echo "  $0 --debug      # Create debug keystore (auto)"
     echo "  $0 --check      # Verify signing tools"
     echo "  $0 --sign       # Sign an APK"
 }
@@ -302,6 +363,9 @@ show_help() {
 case "${1:-}" in
     --create|-c)
         create_keystore
+        ;;
+    --debug|-d)
+        create_debug_keystore
         ;;
     --info|-i)
         show_info
@@ -323,6 +387,7 @@ case "${1:-}" in
             echo ""
             echo "Use commands:"
             echo "  --create  Create new/replacement keystore"
+            echo "  --debug   Create debug keystore"
             echo "  --info    View keystore details"
             echo "  --check   Check signing tools"
             echo "  --sign    Sign APK manually"
