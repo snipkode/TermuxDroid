@@ -15,8 +15,9 @@ import {
 import { useCanvasStore } from '@stores/canvasStore';
 import CanvasNode from './CanvasNode';
 
-export default function Canvas({ components, onChange }) {
+export default function Canvas({ onChange }) {
   const {
+    components,
     selectedId,
     selectComponent,
     draggedType,

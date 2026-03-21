@@ -1,37 +1,49 @@
 export class XmlGeneratorService {
   generate(component) {
-    const { type, properties, children, text } = component;
-    
-    const fullType = this.mapToFullType(type);
-    const attrs = this.generateAttributes(properties);
-    
-    if (!children || children.length === 0) {
-      if (text) {
-        return `<${fullType}${attrs ? '\n  ' + attrs : ''}>${this.escapeXml(text)}</${fullType}>`;
+    if (!component) return '';
+
+    const { type, properties, children } = component;
+
+    if (!type) {
+      // If no type, it might be the root components object, get the first child
+      if (children && children.length > 0) {
+        return this.generate(children[0]);
       }
+      return '';
+    }
+
+    const fullType = this.mapToFullType(type);
+    const attrs = this.generateAttributes(properties || {});
+
+    if (!children || children.length === 0) {
       return `<${fullType}${attrs ? '\n  ' + attrs : ''} />`;
     }
-    
+
     const childrenXml = children
-      .map(child => {
-        const childXml = this.generate(child);
-        return childXml.split('\n').map(line => '  ' + line).join('\n');
-      })
+      .map(child => this.generate(child))
+      .filter(xml => xml && xml.trim() !== '')
+      .map(childXml => '  ' + childXml.replace(/\n/g, '\n  '))
       .join('\n');
-    
+
     return `<${fullType}${attrs ? '\n  ' + attrs : ''}>\n${childrenXml}\n</${fullType}>`;
   }
 
   generateAttributes(props) {
-    if (!props) return '';
-    
+    if (!props || typeof props !== 'object') return '';
+
     return Object.entries(props)
-      .filter(([key]) => key && key.trim() !== '')
+      .filter(([key, value]) => {
+        // Skip empty keys and non-stringifiable values
+        if (!key || key.trim() === '') return false;
+        if (value === null || value === undefined) return false;
+        if (typeof value === 'object') return false; // Skip objects
+        return true;
+      })
       .map(([key, value]) => {
-        const formattedKey = key.startsWith('android:') || key.startsWith('app:') || key.startsWith('tools:') 
-          ? key 
+        const formattedKey = key.startsWith('android:') || key.startsWith('app:') || key.startsWith('tools:')
+          ? key
           : `android:${key}`;
-        return `${formattedKey}="${this.escapeXml(value)}"`;
+        return `${formattedKey}="${this.escapeXml(String(value))}"`;
       })
       .join('\n  ');
   }

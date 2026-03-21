@@ -78,8 +78,12 @@ export default function Editor() {
   useEffect(() => {
     if (layouts.length > 0 && currentLayoutId) {
       const layout = layouts.find(l => l.id === currentLayoutId);
+      console.log('Current layout:', layout);
       if (layout?.components) {
+        console.log('Loading components:', layout.components);
         loadComponents(layout.components);
+      } else {
+        console.log('No components found in layout');
       }
     }
   }, [currentLayoutId, layouts]);
@@ -288,7 +292,6 @@ export default function Editor() {
           }}
         >
           <Canvas
-            components={components}
             onChange={handleComponentChange}
           />
         </Box>

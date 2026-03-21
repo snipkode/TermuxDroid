@@ -35,19 +35,20 @@ export class XmlParserService {
       children: []
     };
 
-    // Process children
-    if (node.$$ && Array.isArray(node.$$)) {
-      component.children = node.$$.map(child => {
-        const childTag = child['#name'] || Object.keys(child)[0];
-        return this.processNode(childTag, child);
-      }).filter(Boolean);
-    } else if (node.$$) {
-      const childTag = node.$$['#name'] || Object.keys(node.$$)[0];
-      component.children = [this.processNode(childTag, node.$$)].filter(Boolean);
+    // Process children - handle both array and single object
+    const childrenNodes = node.$$ ? (Array.isArray(node.$$) ? node.$$ : [node.$$]) : [];
+
+    if (childrenNodes.length > 0) {
+      component.children = childrenNodes
+        .map(child => {
+          const childTag = child['#name'] || Object.keys(child)[0];
+          return this.processNode(childTag, child);
+        })
+        .filter(Boolean);
     }
 
     // Handle text content for TextView-like components
-    if (node._ && node._.trim()) {
+    if (node._ && typeof node._ === 'string' && node._.trim()) {
       component.text = node._.trim();
     }
 

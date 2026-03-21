@@ -28,7 +28,9 @@ export const loadProject = async (req, res) => {
         const layoutName = layoutFile.split('/').pop().replace('.xml', '');
         const xmlContent = await projectLoader.loadLayout(projectPath, layoutName);
         const components = await xmlParser.parse(xmlContent);
-        
+
+        console.log(`Parsed layout "${layoutName}":`, JSON.stringify(components, null, 2));
+
         layouts.push({
           id: layoutName,
           name: layoutName,
