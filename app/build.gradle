@@ -30,11 +30,11 @@ android {
             keyPassword 'android'
         }
         release {
-            // Use debug keystore for development
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
+            // Load from keystore.properties
+            storeFile rootProject.file("keystore/release.keystore")
+            storePassword keystoreProperties['storePassword'] ?: ''
+            keyAlias keystoreProperties['keyAlias'] ?: ''
+            keyPassword keystoreProperties['keyPassword'] ?: ''
         }
     }
 

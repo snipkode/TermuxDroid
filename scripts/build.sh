@@ -133,11 +133,9 @@ check_signing() {
     fi
 }
 
-# Function to get keystore password
+# Function to get keystore password from properties file
 get_keystore_password() {
-    local prompt_message="$1"
-    
-    # Priority 1: Try to read from properties file
+    # Try to read from properties file
     if [ -f "$KEYSTORE_PROPS" ]; then
         local stored_pass=$(grep -E "^storePassword=" "$KEYSTORE_PROPS" 2>/dev/null | cut -d'=' -f2)
         if [ -n "$stored_pass" ]; then
@@ -147,43 +145,14 @@ get_keystore_password() {
         fi
     fi
 
-    # Priority 2: Try environment variable
+    # Try environment variable
     if [ -n "$KEYSTORE_PASSWORD" ]; then
         echo -e "${GREEN}✓${NC} Password loaded from environment"
         echo "$KEYSTORE_PASSWORD"
         return 0
     fi
 
-    # Priority 3: Prompt for password with confirmation
-    echo ""
-    echo -e "${YELLOW}🔐 $prompt_message${NC}"
-    echo "   Keystore: $KEYSTORE_FILE"
-    echo "   💡 Tip: Add 'storePassword=xxx' to keystore/keystore.properties to skip prompt"
-    echo ""
-    
-    # Try multiple times to avoid typos
-    local max_attempts=3
-    local attempt=1
-    
-    while [ $attempt -le $max_attempts ]; do
-        echo "Enter keystore password (attempt $attempt of $max_attempts):"
-        read -s -p "  > " STORE_PASS
-        echo ""
-        
-        # Confirm password
-        read -s -p "  > Confirm: " STORE_PASS_CONFIRM
-        echo ""
-        
-        if [ "$STORE_PASS" = "$STORE_PASS_CONFIRM" ]; then
-            echo "$STORE_PASS"
-            return 0
-        else
-            echo -e "${RED}❌ Passwords do not match!${NC}"
-            attempt=$((attempt + 1))
-        fi
-    done
-    
-    echo -e "${RED}❌ Too many failed attempts!${NC}"
+    echo -e "${RED}❌ Password not found in keystore.properties!${NC}"
     return 1
 }
 
@@ -249,11 +218,11 @@ if [ "$BUILD_TYPE" = "release" ]; then
         echo ""
         echo -e "${GREEN}✅ Signing configured!${NC}"
 
-        # Get password with confirmation
-        STORE_PASS=$(get_keystore_password "Keystore Password Required for Signing")
+        # Get password from keystore.properties
+        STORE_PASS=$(get_keystore_password)
 
         if [ -z "$STORE_PASS" ] || [ "$STORE_PASS" = "1" ]; then
-            echo -e "${RED}❌ Failed to get valid password!${NC}"
+            echo -e "${RED}❌ Failed to get password from keystore.properties!${NC}"
             echo ""
             echo -e "${YELLOW}⚠️  Building UNSIGNED release (for testing only)${NC}"
         else
