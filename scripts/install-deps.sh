@@ -253,36 +253,41 @@ install_android_sdk() {
     mkdir -p "$SDK_ROOT"
     mkdir -p "$CMDLINE_DIR"
 
-    # Download command-line tools
-    TEMP_ZIP="/sdcard/download/cmdline-tools.zip"
+    # Download command-line tools to project temp directory
+    TEMP_ZIP="$PROJECT_DIR/.temp/cmdline-tools.zip"
+    mkdir -p "$PROJECT_DIR/.temp"
+    
     echo -e "${BLUE}   Downloading from Google...${NC}"
     echo "   URL: $CMDLINE_TOOLS_URL"
+    echo "   Save to: $TEMP_ZIP"
     
-    # Check if wget is available
+    # Download using wget or curl
     if command -v wget &> /dev/null; then
-        wget -q --show-progress "$CMDLINE_TOOLS_URL" -O "$TEMP_ZIP" 2>/dev/null
+        wget -q --show-progress "$CMDLINE_TOOLS_URL" -O "$TEMP_ZIP" 2>&1 | tail -3
     elif command -v curl &> /dev/null; then
-        curl -L "$CMDLINE_TOOLS_URL" -o "$TEMP_ZIP" 2>/dev/null
+        curl -L --progress-bar "$CMDLINE_TOOLS_URL" -o "$TEMP_ZIP" 2>&1 | tail -3
     else
         echo -e "${RED}✗${NC} Neither wget nor curl found"
         return 1
     fi
 
-    if [ ! -f "$TEMP_ZIP" ]; then
+    # Verify download
+    if [ ! -f "$TEMP_ZIP" ] || [ ! -s "$TEMP_ZIP" ]; then
         echo -e "${RED}✗${NC} Failed to download Android SDK"
+        echo "   File not found or empty: $TEMP_ZIP"
         return 1
     fi
 
     # Extract
     echo -e "${BLUE}   Extracting...${NC}"
-    unzip -q "$TEMP_ZIP" -d "$CMDLINE_DIR" 2>/dev/null
+    unzip -q "$TEMP_ZIP" -d "$CMDLINE_DIR" 2>&1 | tail -3
     
     # The zip extracts to 'cmdline-tools', rename to 'latest'
     if [ -d "$CMDLINE_DIR/cmdline-tools" ]; then
         mv "$CMDLINE_DIR/cmdline-tools" "$LATEST_DIR"
     fi
 
-    # Clean up
+    # Clean up temp file
     rm -f "$TEMP_ZIP"
 
     if [ -f "$LATEST_DIR/bin/sdkmanager" ]; then
@@ -328,6 +333,7 @@ install_android_sdk() {
         return 0
     else
         echo -e "${RED}✗${NC} Failed to install Android SDK"
+        echo "   sdkmanager not found at: $LATEST_DIR/bin/sdkmanager"
         return 1
     fi
 }
