@@ -255,6 +255,37 @@ export default function CanvasNode({ component, depth = 0, selectedId, onSelect,
           </Box>
         );
 
+      case 'MaterialCardView':
+        return (
+          <Paper
+            elevation={2}
+            sx={{
+              ...baseStyles,
+              border: isSelected ? '2px solid #2196F3' : '1px solid #E0E0E0',
+              p: 1.5,
+              mb: 0.75,
+              bgcolor: 'rgba(255, 255, 255, 0.5)',
+            }}
+          >
+            <Typography variant="caption" color="primary" fontWeight={600} fontSize={10}>
+              📇 MaterialCardView
+            </Typography>
+            <Box sx={{ mt: 0.75 }}>
+              {children?.map((child, index) => (
+                <CanvasNode
+                  key={child.id || index}
+                  component={child}
+                  depth={depth + 1}
+                  selectedId={selectedId}
+                  onSelect={onSelect}
+                  onDrop={onDrop}
+                  draggedType={draggedType}
+                />
+              ))}
+            </Box>
+          </Paper>
+        );
+
       default:
         // Generic container for unknown types
         return (
