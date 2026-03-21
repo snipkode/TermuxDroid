@@ -1,19 +1,29 @@
 {
   "name": "gui-builder-backend",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
-  "description": "GUI Builder Backend - Edit TermuxDroid projects visually",
+  "description": "GUI Builder Backend - Edit TermuxDroid projects visually with Remote Control API",
   "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "remote": "node server.js"
   },
-  "keywords": ["gui-builder", "termuxdroid", "android"],
+  "keywords": [
+    "gui-builder",
+    "termuxdroid",
+    "android",
+    "remote-control",
+    "xml-json"
+  ],
   "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
-    "xml2js": "^0.6.2"
+    "xml2js": "^0.6.2",
+    "ws": "^8.14.2",
+    "chokidar": "^3.5.3",
+    "dotenv": "^16.3.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"

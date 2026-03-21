@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import { Box } from '@mui/material';
 import Editor from '@pages/Editor';
+import RemoteControl from '@pages/remote-control/RemoteControlPage.jsx';
 
 function App() {
   return (
@@ -8,6 +9,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Editor />} />
         <Route path="/editor" element={<Editor />} />
+        <Route path="/remote" element={<RemoteControl />} />
       </Routes>
     </Box>
   );

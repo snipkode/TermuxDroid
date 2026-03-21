@@ -9,6 +9,27 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
+// API Key middleware (optional, for production use)
+app.use('/api', (req, res, next) => {
+  const apiKey = process.env.REMOTE_API_KEY;
+  
+  // Skip auth if no API key configured (dev mode)
+  if (!apiKey) {
+    return next();
+  }
+  
+  const clientKey = req.headers['x-api-key'];
+  
+  if (!clientKey || clientKey !== apiKey) {
+    return res.status(401).json({
+      success: false,
+      error: 'Unauthorized. Valid X-API-Key header required.'
+    });
+  }
+  
+  next();
+});
+
 // API Routes
 app.use('/api', apiRoutes);
 
