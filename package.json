@@ -2,14 +2,14 @@
   "name": "termuxdroid-orchestrator",
   "version": "1.0.0",
   "description": "Node.js orchestrator for TermuxDroid scripts",
-  "main": "orchestrator.js",
   "type": "module",
   "scripts": {
-    "dev": "node orchestrator.js dev",
-    "build": "node orchestrator.js build",
-    "doctor": "node orchestrator.js doctor",
-    "run": "node orchestrator.js",
-    "clean": "node orchestrator.js clean"
+    "dev": "node bin/orchestrator.js dev",
+    "build": "node bin/orchestrator.js build",
+    "doctor": "node bin/orchestrator.js doctor",
+    "run": "node bin/orchestrator.js",
+    "clean": "node bin/orchestrator.js clean",
+    "install": "node bin/orchestrator.js install"
   },
   "keywords": ["orchestrator", "termux", "android"],
   "license": "MIT"

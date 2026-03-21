@@ -42,10 +42,10 @@ npm run doctor
 
 ```bash
 # Langsung via node
-node orchestrator.js dev
-node orchestrator.js build
-node orchestrator.js doctor
+node bin/orchestrator.js dev
+node bin/orchestrator.js build
+node bin/orchestrator.js doctor
 
 # Lihat help
-node orchestrator.js --help
+node bin/orchestrator.js --help
 ```

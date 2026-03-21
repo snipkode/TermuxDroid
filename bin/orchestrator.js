@@ -12,6 +12,9 @@ import { dirname, join } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// Project root is one level up from bin/
+const PROJECT_ROOT = dirname(__dirname);
+
 // Available commands
 const COMMANDS = {
   dev: {
@@ -42,7 +45,7 @@ TermuxDroid Orchestrator
 
 Usage:
   npm run <command>
-  node orchestrator.js <command>
+  node bin/orchestrator.js <command>
 
 Available commands:
 ${Object.entries(COMMANDS)
@@ -73,7 +76,7 @@ function runCommand(command) {
   const child = spawn(script, args, {
     stdio: 'inherit',
     shell: true,
-    cwd: __dirname,
+    cwd: PROJECT_ROOT,
   });
 
   child.on('error', (err) => {
