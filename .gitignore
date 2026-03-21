@@ -9,3 +9,8 @@ app/build/
 # Node.js
 node_modules/
 npm-debug.log*
+
+# Keystore (security!)
+keystore/*.keystore
+keystore/*.properties
+!keystore/.gitkeep

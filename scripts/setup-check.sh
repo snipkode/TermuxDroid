@@ -149,6 +149,48 @@ echo "────────────────────────�
 check_warn "inotifywait" "inotifywait (auto-reload watcher)" "pkg install inotify-tools"
 check_warn "watch" "watch command" "pkg install procps-ng"
 
+# Check Signing Tools
+echo ""
+echo -e "${YELLOW}📋 Checking Signing Tools (For Release Builds)${NC}"
+echo "─────────────────────────────────────"
+
+if command -v keytool &> /dev/null; then
+    echo -e "${GREEN}✓${NC} keytool (for keystore generation)"
+    ((PASS++))
+else
+    echo -e "${RED}✗${NC} keytool NOT FOUND"
+    echo -e "   ${BLUE}Install: pkg install openjdk-17${NC}"
+    ((FAIL++))
+fi
+
+if command -v jarsigner &> /dev/null; then
+    echo -e "${GREEN}✓${NC} jarsigner (for signing APK/AAB)"
+    ((PASS++))
+else
+    echo -e "${RED}✗${NC} jarsigner NOT FOUND"
+    echo -e "   ${BLUE}Install: pkg install openjdk-17${NC}"
+    ((FAIL++))
+fi
+
+if command -v apksigner &> /dev/null; then
+    echo -e "${GREEN}✓${NC} apksigner (Android APK signer)"
+    ((PASS++))
+else
+    echo -e "${YELLOW}⚠${NC} apksigner NOT FOUND"
+    echo -e "   Install Android SDK build-tools for apksigner"
+    ((WARN++))
+fi
+
+# Check existing keystore
+if [ -f "keystore/release.keystore" ]; then
+    echo -e "${GREEN}✓${NC} Keystore found: keystore/release.keystore"
+    ((PASS++))
+else
+    echo -e "${YELLOW}⚠${NC} No keystore found"
+    echo -e "   ${BLUE}Create: ./scripts/keystore.sh --create${NC}"
+    ((WARN++))
+fi
+
 # Check Device Connection
 echo ""
 echo -e "${YELLOW}📋 Checking Device Connection...${NC}"

@@ -9,6 +9,7 @@
     "build:release": "node bin/orchestrator.js build:release",
     "build:aab": "node bin/orchestrator.js build:aab",
     "doctor": "node bin/orchestrator.js doctor",
+    "keystore": "node bin/orchestrator.js keystore",
     "run": "node bin/orchestrator.js",
     "clean": "node bin/orchestrator.js clean",
     "install": "node bin/orchestrator.js install"

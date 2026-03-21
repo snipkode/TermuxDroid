@@ -27,15 +27,19 @@ const COMMANDS = {
   },
   'build:release': {
     script: './build.sh --release',
-    description: 'Build release APK (unsigned)',
+    description: 'Build release APK (auto-sign if keystore exists)',
   },
   'build:aab': {
     script: './build.sh --aab',
-    description: 'Build release AAB (for Play Store)',
+    description: 'Build AAB for Play Store (auto-sign if keystore exists)',
   },
   doctor: {
     script: './setup-check.sh',
     description: 'Check environment setup',
+  },
+  keystore: {
+    script: './keystore.sh',
+    description: 'Create/manage signing keystore',
   },
   clean: {
     script: './gradlew clean',

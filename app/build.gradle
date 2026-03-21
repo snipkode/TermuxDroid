@@ -2,6 +2,13 @@ plugins {
     id 'com.android.application'
 }
 
+// Load keystore properties if available
+def keystorePropertiesFile = rootProject.file("keystore/keystore.properties")
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 android {
     namespace 'com.myapp'
     compileSdk 33
@@ -14,15 +21,34 @@ android {
         versionName "1.0"
     }
 
+    // Signing configuration
+    signingConfigs {
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
+        release {
+            // Will be configured via gradle.properties or command line
+            storeFile rootProject.file("keystore/release.keystore")
+            storePassword System.getenv('KEYSTORE_PASSWORD') ?: keystoreProperties['storePassword'] ?: ''
+            keyAlias System.getenv('KEY_ALIAS') ?: keystoreProperties['keyAlias'] ?: ''
+            keyPassword System.getenv('KEY_PASSWORD') ?: keystoreProperties['keyPassword'] ?: ''
+        }
+    }
+
     buildTypes {
         debug {
             debuggable true
             minifyEnabled false
+            signingConfig signingConfigs.debug
             buildConfigField "String", "VERSION_NAME", "\"1.0\""
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
             buildConfigField "String", "VERSION_NAME", "\"1.0\""
         }
     }
@@ -40,17 +66,17 @@ android {
 dependencies {
     // Force consistent Kotlin version
     implementation platform('org.jetbrains.kotlin:kotlin-bom:1.8.10')
-    
+
     // AndroidX Core
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.activity:activity:1.7.2'
-    
+
     // Lifecycle
     implementation 'androidx.lifecycle:lifecycle-runtime:2.6.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel:2.6.1'
-    
+
     // Kotlin stdlib (aligned with BOM)
     implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.8.10'
 }

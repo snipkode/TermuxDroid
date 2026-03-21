@@ -82,9 +82,10 @@ Quick commands via NPM:
 |---------|-------------|
 | `npm run dev` | **Dev mode with auto-reload** |
 | `npm run build` | Build debug APK |
-| `npm run build:release` | Build release APK (unsigned) |
-| `npm run build:aab` | Build AAB for Play Store |
+| `npm run build:release` | Build release APK (auto-sign if keystore exists) |
+| `npm run build:aab` | Build AAB for Play Store (auto-sign if keystore exists) |
 | `npm run doctor` | Check environment setup |
+| `npm run keystore` | Create/manage signing keystore |
 | `npm run clean` | Clean build artifacts |
 | `npm run install` | Install APK to device |
 
@@ -123,6 +124,61 @@ Scripts are located in `scripts/` folder. You can run them directly:
 ./scripts/dev.sh      # Same as ./dev.sh
 ./scripts/build.sh    # Same as ./build.sh
 ```
+
+---
+
+## 🔐 Signing Release Builds
+
+For **Play Store upload** or **distribution**, you need to sign your APK/AAB.
+
+### Quick Setup
+
+```bash
+# 1. Check signing tools
+npm run doctor
+
+# 2. Create keystore
+npm run keystore
+# or
+./scripts/keystore.sh --create
+```
+
+### Build Signed Release
+
+```bash
+# Signed APK
+npm run build:release
+
+# Signed AAB (for Play Store)
+npm run build:aab
+```
+
+**How it works:**
+- If keystore exists, release builds are **automatically signed**
+- You'll be prompted for keystore password during build
+- Unsigned builds available with `--no-sign` flag
+
+### Keystore Commands
+
+```bash
+# Create new keystore
+./scripts/keystore.sh --create
+
+# View keystore info
+./scripts/keystore.sh --info
+
+# Check signing tools
+./scripts/keystore.sh --check
+
+# Sign APK manually
+./scripts/keystore.sh --sign
+```
+
+### ⚠️ Important
+
+- **Backup your keystore!** Lost keystore = can't update your app
+- **Never commit keystore to git** (already in `.gitignore`)
+- Use same keystore for all updates to same app on Play Store
 
 ---
 
