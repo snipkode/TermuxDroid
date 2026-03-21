@@ -14,23 +14,23 @@ import androidx.appcompat.app.AppCompatActivity;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
-    
+
     private TextView tvCounter;
     private TextView tvInfo;
     private Button btnIncrement;
     private Button btnDecrement;
     private Button btnReset;
     private Button btnShowInfo;
-    
+
     private int counter = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
+
         Log.d(TAG, "MainActivity onCreate");
-        
+
         // Initialize views
         tvCounter = findViewById(R.id.tvCounter);
         tvInfo = findViewById(R.id.tvInfo);
@@ -38,46 +38,83 @@ public class MainActivity extends AppCompatActivity {
         btnDecrement = findViewById(R.id.btnDecrement);
         btnReset = findViewById(R.id.btnReset);
         btnShowInfo = findViewById(R.id.btnShowInfo);
-        
+
         // Setup click listeners
         btnIncrement.setOnClickListener(v -> {
             counter++;
             updateCounter();
+            animateCounter();
             Log.d(TAG, "Counter incremented: " + counter);
         });
-        
+
         btnDecrement.setOnClickListener(v -> {
             counter--;
             updateCounter();
+            animateCounter();
             Log.d(TAG, "Counter decremented: " + counter);
         });
-        
+
         btnReset.setOnClickListener(v -> {
             counter = 0;
             updateCounter();
-            Toast.makeText(this, "Counter reset", Toast.LENGTH_SHORT).show();
+            tvCounter.setScaleX(1.5f);
+            tvCounter.setScaleY(1.5f);
+            tvCounter.animate()
+                .scaleX(1f)
+                .scaleY(1f)
+                .setDuration(300)
+                .start();
+            Toast.makeText(this, "✓ Counter diulang", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "Counter reset");
         });
-        
+
         btnShowInfo.setOnClickListener(v -> {
             showDeviceInfo();
         });
-        
+
         // Initialize counter display
         updateCounter();
     }
-    
+
     private void updateCounter() {
         tvCounter.setText(String.valueOf(counter));
     }
-    
+
+    private void animateCounter() {
+        tvCounter.animate()
+            .scaleX(1.2f)
+            .scaleY(1.2f)
+            .setDuration(100)
+            .withEndAction(() -> tvCounter.animate()
+                .scaleX(1f)
+                .scaleY(1f)
+                .setDuration(100)
+                .start())
+            .start();
+    }
+
     private void showDeviceInfo() {
-        String info = "Android Version: " + android.os.Build.VERSION.RELEASE + "\n" +
-                     "Model: " + android.os.Build.MODEL + "\n" +
-                     "SDK: " + android.os.Build.VERSION.SDK_INT + "\n" +
-                     "App Version: " + BuildConfig.VERSION_NAME;
-        
+        String info = "⚡ Versi Android: " + android.os.Build.VERSION.RELEASE + "\n" +
+                     "📱 Model: " + android.os.Build.MODEL + "\n" +
+                     "🔧 SDK: " + android.os.Build.VERSION.SDK_INT + "\n" +
+                     "🏭 Pabrikan: " + android.os.Build.MANUFACTURER + "\n" +
+                     "📲 Merek: " + android.os.Build.BRAND + "\n" +
+                     "📐 Layar: " + getResources().getDisplayMetrics().widthPixels + "x" + 
+                     getResources().getDisplayMetrics().heightPixels + "\n" +
+                     "📦 Versi App: " + BuildConfig.VERSION_NAME;
+
         tvInfo.setText(info);
+        
+        // Animate info card
+        tvInfo.setAlpha(0f);
+        tvInfo.setScaleY(0.8f);
+        tvInfo.animate()
+            .alpha(1f)
+            .scaleY(1f)
+            .setDuration(300)
+            .start();
+            
+        Toast.makeText(this, "✓ Info device ditampilkan", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "Device info displayed");
     }
 

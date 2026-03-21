@@ -44,16 +44,95 @@ cd TermuxDroid
 
 ---
 
+## ✅ Environment Checklist
+
+Before you start, verify your setup:
+
+```bash
+./setup-check.sh
+```
+
+This will check:
+- Java installation
+- ADB and Android tools
+- Project structure
+- Device connection
+- Optional tools (inotifywait for auto-reload)
+
+**Quick install all requirements:**
+```bash
+pkg install openjdk-17 git android-tools inotify-tools
+```
+
+---
+
 ## 🛠️ Available Commands
+
+### Main Scripts
 
 | Command | Description |
 |---------|-------------|
+| `./setup-check.sh` | Check environment setup and prerequisites |
 | `./build.sh` | Build debug APK with device selection |
 | `./install-apk.sh` | Install APK to connected device |
 | `./run.sh` | Launch the app on device |
+| `./dev.sh` | **Dev mode with auto-reload** (hot reload-like) |
+
+### Gradle Commands
+
+| Command | Description |
+|---------|-------------|
 | `./gradlew clean` | Clean build artifacts |
 | `./gradlew assembleDebug` | Build debug APK |
 | `./gradlew assembleRelease` | Build release APK |
+
+### Direct Script Access
+
+Scripts are located in `scripts/` folder. You can run them directly:
+```bash
+./scripts/dev.sh      # Same as ./dev.sh
+./scripts/build.sh    # Same as ./build.sh
+```
+
+---
+
+## 🔥 Dev Mode (Auto-Reload)
+
+For faster development with **hot reload-like** experience:
+
+### Start Dev Mode
+
+```bash
+./dev.sh
+```
+
+This will:
+1. Build initial APK
+2. Install to device
+3. Launch the app
+4. **Watch for file changes** and auto-rebuild + auto-restart
+
+### How It Works
+
+| Change Detected | Action |
+|-----------------|--------|
+| Java files (`.java`) | Rebuild → Install → Restart app |
+| Resources (`.xml`, etc) | Rebuild → Install → Restart app |
+
+### Detection Modes
+
+- **inotifywait** (instant) - Real-time file watching
+- **Polling** (fallback) - Checks every 2 seconds
+
+### Install inotifywait for Instant Detection
+
+```bash
+pkg install inotify-tools
+```
+
+### Stop Dev Mode
+
+Press `Ctrl+C` to stop watching.
 
 ---
 
@@ -69,10 +148,23 @@ TermuxDroid/
 │   │   ├── res/layout/activity_main.xml
 │   │   └── AndroidManifest.xml
 │   └── build.gradle
-├── build.sh
-├── install-apk.sh
+├── scripts/
+│   ├── build.sh         # Build APK with device selection
+│   ├── install-apk.sh   # Install APK to device
+│   ├── run.sh           # Launch app
+│   ├── dev.sh           # Dev mode with auto-reload
+│   └── setup-check.sh   # Environment checklist
+├── build.sh             # Wrapper (runs scripts/build.sh)
+├── run.sh               # Wrapper (runs scripts/run.sh)
+├── dev.sh               # Wrapper (runs scripts/dev.sh)
+├── install-apk.sh       # Wrapper (runs scripts/install-apk.sh)
+├── setup-check.sh       # Wrapper (runs scripts/setup-check.sh)
+├── build.gradle
 └── README.md
 ```
+
+**Note:** Wrapper scripts in root directory call scripts in `scripts/` folder.
+You can use either `./dev.sh` or `./scripts/dev.sh` - both work the same!
 
 ---
 
