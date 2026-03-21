@@ -53,8 +53,9 @@ export const updateButtonStyle = async (req, res) => {
 ${buttonStyleItems.join('\n')}
     </style>`;
 
-    const buttonStyleRegex = /<!-- Button style -->\s*<style name="Theme\.MyApp\.Button"[^}]*<\/style>/s;
-    
+    // Match button style block - handle multiline XML properly
+    const buttonStyleRegex = /<!-- Button style -->\s*<style name="Theme\.MyApp\.Button"[^>]*>[\s\S]*?<\/style>/;
+
     if (buttonStyleRegex.test(themesContent)) {
       themesContent = themesContent.replace(buttonStyleRegex, buttonStyle);
     } else {
