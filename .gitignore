@@ -14,3 +14,6 @@ npm-debug.log*
 keystore/*.keystore
 keystore/*.properties
 !keystore/.gitkeep
+
+# Debug keystore (auto-generated, not needed in git)
+app/debug.keystore
